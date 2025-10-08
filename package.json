@@ -150,5 +150,8 @@
     "languages": "js",
     "type": "library",
     "version": "0.54.3"
+  },
+  "dependencies": {
+    "react-native-svg": "^15.13.0"
   }
 }
