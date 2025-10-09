@@ -48,7 +48,7 @@ export default function Graph({
   ).map((date) => [date.valueOf(), 0]);
 
   return (
-    <View style={styles.container}>
+    <View>
       <Svg
         viewBox={viewBox.join(' ')}
         width={viewBox[2]}
@@ -138,13 +138,6 @@ export default function Graph({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgb(20,20,20)',
-  },
   svg: {
     overflow: 'visible',
     margin: 30,

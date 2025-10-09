@@ -21,7 +21,7 @@ export interface WeatherStationData {
   }>;
 }
 
-export default function Temperatures({ name }: { name: string }) {
+export default function SnowDepth({ name }: { name: string }) {
   const [valuePoints, setValuePoints] = useState<[number, number][]>([[0, 0]]);
   const [station, setStation] = useState<{ properties: WeatherStationData }>();
 
@@ -34,9 +34,9 @@ export default function Temperatures({ name }: { name: string }) {
         const data: { properties: WeatherStationData } = await response.json();
         setStation(data);
         setValuePoints(
-          data.properties.data.map(({ temperature, timestamp }) => [
+          data.properties.data.map(({ snowDepth, timestamp }) => [
             timestamp * 1000,
-            temperature,
+            Math.ceil(snowDepth ?? 0),
           ])
         );
       }
