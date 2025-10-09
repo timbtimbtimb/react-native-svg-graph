@@ -11,7 +11,6 @@ export default function XAxis({
   stroke,
   bounds,
 }: {
-  valuePoints: [number, number][];
   bounds: Bounds;
   strokeWidth?: number;
   stroke?: ColorValue;

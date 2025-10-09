@@ -17,14 +17,14 @@ import type { ColorValue } from 'react-native';
 
 export default function GraphLine({
   transformer,
-  valuePoints,
+  values,
   strokeWidth,
   bounds,
   positiveColor,
   negativeColor,
 }: {
   transformer: Transformer;
-  valuePoints: [number, number][];
+  values: [number, number][];
   bounds: Bounds;
   positiveColor: ColorValue;
   negativeColor: ColorValue;
@@ -32,13 +32,13 @@ export default function GraphLine({
   strokeWidth?: LineProps['strokeWidth'];
 }): ReactElement {
   const uniqueId = useId();
-  const line = svgCoords2SvgLineCoords(valuePoints.map(transformer));
+  const line = svgCoords2SvgLineCoords(values.map(transformer));
 
   const polygonValuePoints: [number, number][] = [
-    ...valuePoints,
+    ...values,
     [bounds.maxValueX, 0],
     [bounds.minValueX, 0],
-    valuePoints[0] as [number, number],
+    values[0] as [number, number],
   ];
 
   const polygonSvgCoords = polygonValuePoints
