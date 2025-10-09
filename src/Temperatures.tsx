@@ -9,6 +9,7 @@ import YAxis from './components/YAxis';
 import XAxis from './components/XAxis';
 import { useEffect, useState } from 'react';
 import getBounds from './utils/getBounds';
+import getRoundDatesBetween from './utils/getRoundDatesBetween';
 
 export interface WeatherStationData {
   id: string;
@@ -32,6 +33,9 @@ export default function Temperatures() {
   const [valuePoints, setValuePoints] = useState<[number, number][]>([[0, 0]]);
   const [station, setStation] = useState<{ properties: WeatherStationData }>();
 
+  const width = 1500;
+  const height = 500;
+
   useEffect(() => {
     fetch('https://api.snowmap.fr/v3/weatherStations/73296005').then(
       async (response) => {
@@ -47,9 +51,34 @@ export default function Temperatures() {
     );
   }, []);
 
-  const viewBox = getViewBox(1500, 500);
+  const viewBox = getViewBox(width, height);
   const bounds = getBounds(valuePoints);
   const transformer = getTransofrmer(valuePoints, viewBox, bounds);
+
+  const temperatureTicks: [number, number][] = Array.from(
+    {
+      length: Math.ceil(
+        bounds.zeroVisibleMaxValueY - bounds.zeroVisibleMinValueY
+      ),
+    },
+    (_, i) => {
+      return [0, Math.floor(bounds.zeroVisibleMinValueY) + i];
+    }
+  );
+
+  const datesTicks: [number, number][] = getRoundDatesBetween(
+    new Date(bounds.minValueX),
+    new Date(bounds.maxValueX),
+    'days'
+  ).map((date) => {
+    return [date.valueOf(), 0];
+  });
+
+  const hoursTicks: [number, number][] = getRoundDatesBetween(
+    new Date(bounds.minValueX),
+    new Date(bounds.maxValueX),
+    'hours'
+  ).map((date) => [date.valueOf(), 0]);
 
   return (
     <View style={styles.container}>
@@ -67,10 +96,11 @@ export default function Temperatures() {
         <YAxis bounds={bounds} transformer={transformer} />
         <XGrid
           transformer={transformer}
+          values={temperatureTicks}
+          height={height}
           strokeWidth={1}
-          stepSize={1}
+          fontSize={15}
           bounds={bounds}
-          valuePoints={valuePoints}
           zeroVisible={zeroVisible}
           formatter={(v: number) => `${v}°`}
         />
@@ -81,15 +111,13 @@ export default function Temperatures() {
           strokeWidth={1}
           stroke={'rgb(50,50,50)'}
           fill={'rgb(100,100,100)'}
+          width={width}
           fontSize={15}
-          xTextOffset={5}
-          stepSize={1000 * 60 * 60 * 2}
           fontWeight={'bold'}
-          valuePoints={valuePoints}
+          values={hoursTicks}
           zeroVisible={zeroVisible}
           formatter={(v: number) => {
-            const offset = new Date().getTimezoneOffset() * 60 * 1000;
-            const date = new Date(v + offset);
+            const date = new Date(v);
             return `${date.getHours().toString().padStart(2, '0')}h`;
           }}
         />
@@ -98,18 +126,16 @@ export default function Temperatures() {
           top
           bounds={bounds}
           fontWeight={'bold'}
+          width={width}
           grid
           strokeWidth={2}
           fill={'rgb(150,150,150)'}
           stroke={'rgb(150,150,150)'}
-          stepSize={1000 * 60 * 60 * 24}
-          valuePoints={valuePoints}
+          values={datesTicks}
           zeroVisible={zeroVisible}
           fontSize={15}
-          xTextOffset={10}
           formatter={(v: number) => {
-            const offset = new Date().getTimezoneOffset() * 60 * 1000;
-            const date = new Date(v + offset);
+            const date = new Date(v);
             return [
               [
                 'lundi',

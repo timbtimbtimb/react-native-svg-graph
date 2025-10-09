@@ -3,39 +3,48 @@ import { G, Path, Text } from 'react-native-svg';
 import svgCoords2SvgLineCoords from '../utils/svgCoords2SvgLineCoords';
 import type { Transformer } from '../utils/getTransformer';
 import type { ColorValue } from 'react-native';
-import getSteppedRange from '../utils/getSteppedRange';
 import type { Bounds } from '../utils/getBounds';
+
+interface Props {
+  bounds: Bounds;
+  strokeWidth?: number;
+  height: number;
+  stroke?: ColorValue;
+  fontSize: number;
+  values: [number, number][];
+  zeroVisible?: boolean;
+  transformer: Transformer;
+  formatter?: (v: number) => string;
+}
 
 export default function XGrid({
   transformer,
   strokeWidth,
-  stepSize,
   stroke,
+  values,
   bounds,
+  fontSize,
   formatter,
-}: {
-  valuePoints: [number, number][];
-  stepSize: number;
-  bounds: Bounds;
-  strokeWidth?: number;
-  stroke?: ColorValue;
-  zeroVisible?: boolean;
-  transformer: Transformer;
-  formatter?: (v: number) => string;
-}): ReactElement {
-  const lines = getSteppedRange(
-    bounds.zeroVisibleMinValueY,
-    bounds.zeroVisibleMaxValueY,
-    stepSize,
-    false,
-    false
-  ).map((y) => {
+}: Props): ReactElement {
+  let prev = 99999;
+
+  const lines = values.map(([_, y]) => {
     const coords: [number, number][] = [
       [bounds.minValueX, y],
       [bounds.maxValueX, y],
     ];
     const transformed = coords.map(transformer);
     const d = svgCoords2SvgLineCoords(transformed);
+
+    const transformedX = transformed[0]?.[0];
+    const transformedY = transformed[0]?.[1];
+
+    if (transformedX == null || transformedY == null) return null;
+
+    if (Math.abs(prev - transformedY) < fontSize) return null;
+
+    prev = transformedY;
+
     return (
       <G key={d}>
         <Path
@@ -46,9 +55,9 @@ export default function XGrid({
           fill="none"
         />
         <Text
-          x={transformed[0]?.[0]}
-          y={transformed[0]?.[1]}
-          fontSize={15}
+          x={transformedX}
+          y={transformedY}
+          fontSize={fontSize}
           fontFamily="sans"
           fill="gray"
           alignmentBaseline="after-edge"
