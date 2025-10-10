@@ -9,7 +9,6 @@ import type { Transformer } from '../utils/getTransformer';
 import Grid, { type GridStyle } from './Grid';
 
 export type Ticks = Array<{
-  name: string;
   axis: 'x' | 'y';
   values: [number, number][];
   position: 'top' | 'bottom';
@@ -29,7 +28,6 @@ interface Props {
     negativeColor: ColorValue;
   }>;
   zeroVisible: boolean;
-  title: string;
   transformer: Transformer;
 }
 
@@ -42,11 +40,11 @@ export default function Graph({
   ticks,
   zeroVisible,
 }: Props) {
-  const grids = ticks.map((tick) => {
+  const grids = ticks.map((tick, i) => {
     return (
       <Grid
         viewBox={viewBox}
-        key={tick.name}
+        key={i}
         transformer={transformer}
         values={tick.values}
         axis={tick.axis}
@@ -94,7 +92,7 @@ export default function Graph({
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    paddingLeft: 40,
+    paddingLeft: 60,
   },
   svg: {
     overflow: 'visible',

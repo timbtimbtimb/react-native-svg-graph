@@ -1,49 +1,26 @@
-import getViewBox from './utils/getViewBox';
-import getTransofrmer from './utils/getTransformer';
-import { useEffect, useState } from 'react';
-import getBounds from './utils/getBounds';
-import Graph, { type Ticks } from './components/Graph';
-import getRoundDatesBetween from './utils/getRoundDatesBetween';
+import getViewBox from '../utils/getViewBox';
+import getTransofrmer from '../utils/getTransformer';
+import getBounds from '../utils/getBounds';
+import Graph, { type Ticks } from './Graph';
+import getRoundDatesBetween from '../utils/getRoundDatesBetween';
+import type { ColorValue } from 'react-native';
 
-export interface WeatherStationData {
-  id: string;
-  name: string;
-  region: string;
-  elevation: number;
-  data: Array<{
-    timestamp: number;
-    temperature: number;
-    snowDepth: number | null;
-    lastHourPrecipitations: number | null;
-    averageWindSpeed: number | null;
-    averageWindDirection: number | null;
-    windGustsSpeed: number | null;
-    windGustsDirection: number | null;
+export default function GraphMain({
+  values,
+  width,
+  height,
+  textFormatter,
+  colors,
+}: {
+  values: [number, number][][];
+  width: number;
+  height: number;
+  textFormatter: (v: number) => string;
+  colors: Array<{
+    positiveColor: ColorValue;
+    negativeColor: ColorValue;
   }>;
-}
-
-export default function Wind({ name }: { name: string }) {
-  const [values, setValues] = useState<[number, number][][]>([[[0, 0]]]);
-  const [station, setStation] = useState<{ properties: WeatherStationData }>();
-
-  const width = 1500;
-  const height = 500;
-
-  useEffect(() => {
-    fetch(`https://api.snowmap.fr/v3/weatherStations/${name}`).then(
-      async (response) => {
-        const data: { properties: WeatherStationData } = await response.json();
-        setStation(data);
-        setValues([
-          data.properties.data.map(({ temperature, timestamp }) => [
-            timestamp * 1000,
-            temperature - 5,
-          ]),
-        ]);
-      }
-    );
-  }, [name]);
-
+}) {
   const viewBox = getViewBox(width, height);
   const bounds = getBounds(values.flat());
   const transformer = getTransofrmer(values.flat(), viewBox, bounds);
@@ -75,7 +52,6 @@ export default function Wind({ name }: { name: string }) {
 
   const ticks: Ticks = [
     {
-      name: 'hours',
       axis: 'x',
       position: 'bottom',
       values: hoursTicks,
@@ -91,7 +67,6 @@ export default function Wind({ name }: { name: string }) {
       },
     },
     {
-      name: 'dates',
       axis: 'x',
       position: 'top',
       values: datesTicks,
@@ -106,7 +81,7 @@ export default function Wind({ name }: { name: string }) {
             'vendredi',
             'samedi',
             'dimanche',
-          ][date.getDay()],
+          ][date.getDay() - 1],
           date.getDay().toString(),
         ].join(' ');
       },
@@ -118,11 +93,10 @@ export default function Wind({ name }: { name: string }) {
       },
     },
     {
-      name: 'temperatures',
       axis: 'y',
       position: 'top',
       values: temperatureTicks,
-      textFormatter: (v: number) => `${v}°`,
+      textFormatter,
       style: {
         stroke: 'rgb(50,50,50)',
         strokeWidth: 1,
@@ -134,7 +108,6 @@ export default function Wind({ name }: { name: string }) {
 
   return (
     <Graph
-      title={`Températures (°C) — ${station?.properties.name} (${station?.properties.elevation}m) — ${station?.properties.region}`}
       viewBox={viewBox}
       values={values}
       ticks={ticks}
@@ -143,12 +116,7 @@ export default function Wind({ name }: { name: string }) {
       width={width}
       height={height}
       zeroVisible={true}
-      colors={[
-        {
-          positiveColor: 'rgba(255, 123, 0, 1)',
-          negativeColor: 'rgba(0, 102, 255, 1)',
-        },
-      ]}
+      colors={colors}
     />
   );
 }
