@@ -75,6 +75,22 @@ export default function Wind({ name }: { name: string }) {
 
   const ticks: Ticks = [
     {
+      name: 'hours',
+      axis: 'x',
+      position: 'bottom',
+      values: hoursTicks,
+      textFormatter: (v: number) => {
+        const date = new Date(v);
+        return `${date.getHours().toString().padStart(2, '0')}h`;
+      },
+      style: {
+        stroke: 'rgb(50,50,50)',
+        strokeWidth: 1,
+        fontSize: 15,
+        fontWeight: 'bold',
+      },
+    },
+    {
       name: 'dates',
       axis: 'x',
       position: 'top',
@@ -97,22 +113,6 @@ export default function Wind({ name }: { name: string }) {
       style: {
         stroke: 'gray',
         strokeWidth: 3,
-        fontSize: 15,
-        fontWeight: 'bold',
-      },
-    },
-    {
-      name: 'hours',
-      axis: 'x',
-      position: 'bottom',
-      values: hoursTicks,
-      textFormatter: (v: number) => {
-        const date = new Date(v);
-        return `${date.getHours().toString().padStart(2, '0')}h`;
-      },
-      style: {
-        stroke: 'rgb(50,50,50)',
-        strokeWidth: 1,
         fontSize: 15,
         fontWeight: 'bold',
       },

@@ -1,5 +1,5 @@
 import { StyleSheet, View, type ColorValue } from 'react-native';
-import Svg, { Text } from 'react-native-svg';
+import Svg from 'react-native-svg';
 import GraphLine from './GraphLine';
 import YAxis from './YAxis';
 import XAxis from './XAxis';
@@ -41,11 +41,11 @@ export default function Graph({
   colors,
   ticks,
   zeroVisible,
-  title,
 }: Props) {
   const grids = ticks.map((tick) => {
     return (
       <Grid
+        viewBox={viewBox}
         key={tick.name}
         transformer={transformer}
         values={tick.values}
@@ -75,7 +75,7 @@ export default function Graph({
   });
 
   return (
-    <View>
+    <View style={styles.container}>
       <Svg
         viewBox={viewBox.join(' ')}
         width={viewBox[2]}
@@ -86,27 +86,19 @@ export default function Graph({
         <YAxis bounds={bounds} transformer={transformer} />
         {grids}
         {graphLines}
-        <Text
-          fill="rgb(100,100,100)"
-          fontFamily="sans"
-          textAnchor="middle"
-          alignmentBaseline="hanging"
-          fontWeight="bold"
-          fontSize={30}
-          x={transformer([bounds.maxValueX, 0])[0] / 2}
-          y={transformer([0, bounds.zeroVisibleMinValueY])[1] + 30}
-        >
-          {title}
-        </Text>
       </Svg>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    paddingLeft: 40,
+  },
   svg: {
     overflow: 'visible',
-    margin: 30,
-    marginBottom: 65,
+    width: 'auto',
+    height: 'auto',
   },
 });

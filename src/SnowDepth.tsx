@@ -50,21 +50,13 @@ export default function Wind({ name }: { name: string }) {
 
   const snowdepthTicks: [number, number][] = Array.from(
     {
-      length: Math.max(
-        10,
-        Math.ceil(bounds.zeroVisibleMaxValueY - bounds.zeroVisibleMinValueY)
+      length: Math.ceil(
+        bounds.zeroVisibleMaxValueY - bounds.zeroVisibleMinValueY
       ),
     },
     (_, i) => {
       return [0, Math.ceil(bounds.zeroVisibleMinValueY) + i];
     }
-  );
-
-  console.log(
-    Math.max(
-      10,
-      Math.ceil(bounds.zeroVisibleMaxValueY - bounds.zeroVisibleMinValueY)
-    )
   );
 
   const datesTicks: [number, number][] = getRoundDatesBetween(
@@ -82,6 +74,22 @@ export default function Wind({ name }: { name: string }) {
   ).map((date) => [date.valueOf(), 0]);
 
   const ticks: Ticks = [
+    {
+      name: 'hours',
+      axis: 'x',
+      position: 'bottom',
+      values: hoursTicks,
+      textFormatter: (v: number) => {
+        const date = new Date(v);
+        return `${date.getHours().toString().padStart(2, '0')}h`;
+      },
+      style: {
+        stroke: 'rgb(50,50,50)',
+        strokeWidth: 1,
+        fontSize: 15,
+        fontWeight: 'bold',
+      },
+    },
     {
       name: 'dates',
       axis: 'x',
@@ -110,22 +118,6 @@ export default function Wind({ name }: { name: string }) {
       },
     },
     {
-      name: 'hours',
-      axis: 'x',
-      position: 'bottom',
-      values: hoursTicks,
-      textFormatter: (v: number) => {
-        const date = new Date(v);
-        return `${date.getHours().toString().padStart(2, '0')}h`;
-      },
-      style: {
-        stroke: 'rgb(50,50,50)',
-        strokeWidth: 1,
-        fontSize: 15,
-        fontWeight: 'bold',
-      },
-    },
-    {
       name: 'snowDepth',
       axis: 'y',
       position: 'top',
@@ -142,7 +134,7 @@ export default function Wind({ name }: { name: string }) {
 
   return (
     <Graph
-      title={`Températures (°C) — ${station?.properties.name} (${station?.properties.elevation}m) — ${station?.properties.region}`}
+      title={`Neige (cm) — ${station?.properties.name} (${station?.properties.elevation}m) — ${station?.properties.region}`}
       viewBox={viewBox}
       values={values}
       ticks={ticks}

@@ -4,6 +4,7 @@ import svgCoords2SvgLineCoords from '../utils/svgCoords2SvgLineCoords';
 import type { Transformer } from '../utils/getTransformer';
 import type { Bounds } from '../utils/getBounds';
 import type { ColorValue } from 'react-native';
+import type { ViewBox } from '../utils/getViewBox';
 
 export const steps = [
   0.001, 0.01, 0.1, 1, 2, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 10000, 100000,
@@ -33,6 +34,7 @@ interface Props {
   zeroVisible?: boolean;
   position: 'top' | 'bottom';
   axis: 'x' | 'y';
+  viewBox: ViewBox;
   style: GridStyle;
   transformer: Transformer;
   formatter: (v: number) => string;
@@ -44,6 +46,7 @@ export default function Grid({
   bounds,
   zeroVisible,
   position,
+  viewBox,
   style,
   transformer,
   formatter,
@@ -55,6 +58,7 @@ export default function Grid({
 
   const rawLinesList = getRawLinesList(
     values,
+    viewBox,
     zeroVisible ?? false,
     bounds,
     axis,
@@ -106,6 +110,7 @@ export default function Grid({
 
 function getRawLinesList(
   values: [number, number][],
+  viewBox: ViewBox,
   zeroVisible: boolean,
   bounds: Bounds,
   axis: 'x' | 'y',
@@ -128,14 +133,35 @@ function getRawLinesList(
       const coords = axis === 'x' ? xCoords : yCoords;
 
       const transformed = coords.map(transformer);
-      const d = svgCoords2SvgLineCoords(transformed.slice(0, 2));
+
+      const slice = transformed.slice(0, 2) as [
+        [number, number],
+        [number, number],
+      ];
+
+      const d = svgCoords2SvgLineCoords(
+        axis === 'x'
+          ? [
+              [slice[0][0], viewBox[1]],
+              [slice[1][0], viewBox[3] + viewBox[1]],
+            ]
+          : [
+              [viewBox[0], slice[0][1]],
+              [viewBox[2] + viewBox[0], slice[1][1]],
+            ]
+      );
 
       const transformedX = transformed[0]?.[0];
       const transformedY = transformed[0]?.[1];
 
       const text = formatter(axis === 'x' ? x : y);
-      const textX = transformedX;
-      const textY = position === 'top' ? transformedY : transformed[1]?.[1];
+      const textX = axis === 'x' ? transformedX : viewBox[0];
+      const textY =
+        axis === 'x'
+          ? position === 'bottom'
+            ? viewBox[1] + viewBox[3]
+            : viewBox[1]
+          : transformedY;
 
       if (textX == null || textY == null) {
         return null;

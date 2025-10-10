@@ -15,16 +15,10 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    flex: 1,
-    alignItems: 'center',
     backgroundColor: 'rgb(20,20,20)',
     gap: 20,
     padding: 20,
     overflow: 'scroll',
-  },
-  svg: {
-    borderWidth: 1,
-    borderColor: 'black',
+    width: '100%',
   },
 });
