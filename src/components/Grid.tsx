@@ -5,11 +5,25 @@ import type { Transformer } from '../utils/getTransformer';
 import type { Bounds } from '../utils/getBounds';
 import type { ColorValue } from 'react-native';
 
+export const steps = [
+  0.001, 0.01, 0.1, 1, 2, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 10000, 100000,
+  1000000, 10000000,
+];
+
 export interface GridStyle {
   stroke: ColorValue;
   strokeWidth: number;
   fontSize: number;
   fontWeight: FontWeight;
+}
+
+interface Line {
+  d: string;
+  textX: number;
+  textY: number;
+  text: string;
+  x: number;
+  y: number;
 }
 
 interface Props {
@@ -34,77 +48,140 @@ export default function Grid({
   transformer,
   formatter,
 }: Props): ReactElement {
-  let prev = 0;
+  const alignmentBaseline =
+    axis === 'x' && position === 'bottom' ? 'before-edge' : undefined;
+  const textAnchor = axis === 'y' ? 'end' : undefined;
+  const dx = axis === 'y' ? style.fontSize * -0.25 : 0;
 
-  const lines = values.map(([x, y]) => {
-    const xCoords: [number, number][] = [
-      [x, zeroVisible ? bounds.zeroVisibleMaxValueY : bounds.maxValueY],
-      [x, zeroVisible ? bounds.zeroVisibleMinValueY : bounds.minValueY],
-    ];
+  const rawLinesList = getRawLinesList(
+    values,
+    zeroVisible ?? false,
+    bounds,
+    axis,
+    transformer,
+    formatter,
+    position
+  );
 
-    const yCoords: [number, number][] = [
-      [bounds.minValueX, y],
-      [bounds.maxValueX, y],
-    ];
+  const averageLinesDistance = getAverageLinesDistance(rawLinesList, axis);
 
-    const coords = axis === 'x' ? xCoords : yCoords;
+  const targetDistance =
+    axis === 'y' ? style.fontSize * 1.25 : style.fontSize * 4;
 
-    const transformed = coords.map(transformer);
-    const d = svgCoords2SvgLineCoords(transformed.slice(0, 2));
+  const reduceBy = averageLinesDistance / targetDistance;
 
-    const transformedX = transformed[0]?.[0];
-    const transformedY = transformed[0]?.[1];
+  const reducedSteps =
+    reduceBy >= 1
+      ? rawLinesList
+      : getReducedSteps(rawLinesList, reduceBy, axis);
 
-    const text = formatter(axis === 'x' ? x : y);
-    const textX = transformedX;
-    const textY = position === 'top' ? transformedY : transformed[1]?.[1];
-    const alignmentBaseline =
-      axis === 'x' && position === 'bottom' ? 'before-edge' : undefined;
-    const textAnchor = axis === 'y' ? 'end' : undefined;
+  if (reducedSteps == null) return <></>;
 
-    if (transformedX == null || transformedY == null) {
-      return null;
-    }
+  const elements = reducedSteps.map(({ d, textX, textY, text }) => (
+    <G key={d}>
+      <Path
+        d={d}
+        stroke={style.stroke}
+        strokeWidth={style.strokeWidth}
+        fill="none"
+      />
+      <Text
+        x={textX}
+        y={textY}
+        dx={dx}
+        fontWeight={style.fontWeight}
+        fontSize={style.fontSize}
+        fontFamily="sans"
+        fill={'gray'}
+        alignmentBaseline={alignmentBaseline}
+        textAnchor={textAnchor}
+      >
+        {text}
+      </Text>
+    </G>
+  ));
 
-    if (axis === 'x') {
-      if (Math.abs(prev - transformedX) < style.fontSize + text.length) {
+  return <G>{elements}</G>;
+}
+
+function getRawLinesList(
+  values: [number, number][],
+  zeroVisible: boolean,
+  bounds: Bounds,
+  axis: 'x' | 'y',
+  transformer: Transformer,
+  formatter: (v: number) => string,
+  position: 'top' | 'bottom'
+): Line[] {
+  const lines = values
+    .map(([x, y]) => {
+      const xCoords: [number, number][] = [
+        [x, zeroVisible ? bounds.zeroVisibleMaxValueY : bounds.maxValueY],
+        [x, zeroVisible ? bounds.zeroVisibleMinValueY : bounds.minValueY],
+      ];
+
+      const yCoords: [number, number][] = [
+        [bounds.minValueX, y],
+        [bounds.maxValueX, y],
+      ];
+
+      const coords = axis === 'x' ? xCoords : yCoords;
+
+      const transformed = coords.map(transformer);
+      const d = svgCoords2SvgLineCoords(transformed.slice(0, 2));
+
+      const transformedX = transformed[0]?.[0];
+      const transformedY = transformed[0]?.[1];
+
+      const text = formatter(axis === 'x' ? x : y);
+      const textX = transformedX;
+      const textY = position === 'top' ? transformedY : transformed[1]?.[1];
+
+      if (textX == null || textY == null) {
         return null;
-      } else {
-        prev = transformedX;
       }
-    }
 
-    if (axis === 'y') {
-      if (Math.abs(prev - transformedY) < style.fontSize * 1.25) {
-        return null;
-      } else {
-        prev = transformedY;
-      }
-    }
+      return {
+        d,
+        textX,
+        textY,
+        text,
+        x,
+        y,
+      };
+    })
+    .filter((i) => i != null);
 
-    return (
-      <G key={d}>
-        <Path
-          d={d}
-          stroke={style.stroke}
-          strokeWidth={style.strokeWidth}
-          fill="none"
-        />
-        <Text
-          x={textX}
-          y={textY}
-          fontWeight={style.fontWeight}
-          fontSize={style.fontSize}
-          fontFamily="sans"
-          fill={'gray'}
-          alignmentBaseline={alignmentBaseline}
-          textAnchor={textAnchor}
-        >
-          {text}
-        </Text>
-      </G>
-    );
-  });
+  return lines;
+}
 
-  return <G>{lines}</G>;
+function getAverageLinesDistance(lines: Line[], axis: 'x' | 'y') {
+  const dist = Math.abs(
+    lines.reduce<number>((acc, _, i, arr) => {
+      if (i === 0) return 0;
+      const v =
+        axis === 'x'
+          ? (arr[i]?.textX ?? 0) - (arr[i - 1]?.textX ?? 0)
+          : (arr[i]?.textY ?? 0) - (arr[i - 1]?.textY ?? 0);
+      return acc + v;
+    }, 0) / lines.length
+  );
+
+  return dist;
+}
+
+function getReducedSteps(lines: Line[], reduceBy: number, axis: 'x' | 'y') {
+  const targetLength = lines.length * reduceBy;
+
+  const reducedSteps = steps
+    .map((step) => {
+      return lines.filter((line) => line[axis] % step === 0);
+    })
+    .filter((s) => {
+      return s.length < targetLength;
+    })
+    .sort((a, b) => b.length - a.length)
+    .at(0);
+
+  return reducedSteps;
 }

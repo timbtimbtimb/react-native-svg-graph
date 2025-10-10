@@ -55,7 +55,7 @@ export default function Wind({ name }: { name: string }) {
       ),
     },
     (_, i) => {
-      return [0, Math.floor(bounds.zeroVisibleMinValueY) + i];
+      return [0, Math.ceil(bounds.zeroVisibleMinValueY) + i];
     }
   );
 

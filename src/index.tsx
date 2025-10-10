@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import Temperatures from './Temperatures';
-// import SnowDepth from './SnowDepth';
+import SnowDepth from './SnowDepth';
 import Wind from './Wind';
 
 export default function App() {
@@ -8,7 +8,7 @@ export default function App() {
     <View style={styles.container}>
       <Wind name={'65059001'} />
       <Temperatures name={'65059001'} />
-      {/* <SnowDepth name={'65059001'} /> */}
+      <SnowDepth name={'65059001'} />
     </View>
   );
 }

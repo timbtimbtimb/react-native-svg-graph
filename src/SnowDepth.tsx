@@ -2,7 +2,8 @@ import getViewBox from './utils/getViewBox';
 import getTransofrmer from './utils/getTransformer';
 import { useEffect, useState } from 'react';
 import getBounds from './utils/getBounds';
-import Graph from './components/Graph';
+import Graph, { type Ticks } from './components/Graph';
+import getRoundDatesBetween from './utils/getRoundDatesBetween';
 
 export interface WeatherStationData {
   id: string;
@@ -21,8 +22,8 @@ export interface WeatherStationData {
   }>;
 }
 
-export default function SnowDepth({ name }: { name: string }) {
-  const [valuePoints, setValuePoints] = useState<[number, number][]>([[0, 0]]);
+export default function Wind({ name }: { name: string }) {
+  const [values, setValues] = useState<[number, number][][]>([[[0, 0]]]);
   const [station, setStation] = useState<{ properties: WeatherStationData }>();
 
   const width = 1500;
@@ -33,42 +34,129 @@ export default function SnowDepth({ name }: { name: string }) {
       async (response) => {
         const data: { properties: WeatherStationData } = await response.json();
         setStation(data);
-        setValuePoints(
+        setValues([
           data.properties.data.map(({ snowDepth, timestamp }) => [
             timestamp * 1000,
-            Math.ceil(snowDepth ?? 0),
-          ])
-        );
+            snowDepth ?? 0,
+          ]),
+        ]);
       }
     );
   }, [name]);
 
   const viewBox = getViewBox(width, height);
-  const bounds = getBounds(valuePoints);
-  const transformer = getTransofrmer(valuePoints, viewBox, bounds);
+  const bounds = getBounds(values.flat());
+  const transformer = getTransofrmer(values.flat(), viewBox, bounds);
 
-  const temperatureTicks: [number, number][] = Array.from(
+  const snowdepthTicks: [number, number][] = Array.from(
     {
-      length: Math.ceil(
-        bounds.zeroVisibleMaxValueY - bounds.zeroVisibleMinValueY
+      length: Math.max(
+        10,
+        Math.ceil(bounds.zeroVisibleMaxValueY - bounds.zeroVisibleMinValueY)
       ),
     },
     (_, i) => {
-      return [0, Math.floor(bounds.zeroVisibleMinValueY) + i];
+      return [0, Math.ceil(bounds.zeroVisibleMinValueY) + i];
     }
   );
 
+  console.log(
+    Math.max(
+      10,
+      Math.ceil(bounds.zeroVisibleMaxValueY - bounds.zeroVisibleMinValueY)
+    )
+  );
+
+  const datesTicks: [number, number][] = getRoundDatesBetween(
+    new Date(bounds.minValueX),
+    new Date(bounds.maxValueX),
+    'days'
+  ).map((date) => {
+    return [date.valueOf(), 0];
+  });
+
+  const hoursTicks: [number, number][] = getRoundDatesBetween(
+    new Date(bounds.minValueX),
+    new Date(bounds.maxValueX),
+    'hours'
+  ).map((date) => [date.valueOf(), 0]);
+
+  const ticks: Ticks = [
+    {
+      name: 'dates',
+      axis: 'x',
+      position: 'top',
+      values: datesTicks,
+      textFormatter: (v: number) => {
+        const date = new Date(v);
+        return [
+          [
+            'lundi',
+            'mardi',
+            'mercredi',
+            'jeudi',
+            'vendredi',
+            'samedi',
+            'dimanche',
+          ][date.getDay()],
+          date.getDay().toString(),
+        ].join(' ');
+      },
+      style: {
+        stroke: 'gray',
+        strokeWidth: 3,
+        fontSize: 15,
+        fontWeight: 'bold',
+      },
+    },
+    {
+      name: 'hours',
+      axis: 'x',
+      position: 'bottom',
+      values: hoursTicks,
+      textFormatter: (v: number) => {
+        const date = new Date(v);
+        return `${date.getHours().toString().padStart(2, '0')}h`;
+      },
+      style: {
+        stroke: 'rgb(50,50,50)',
+        strokeWidth: 1,
+        fontSize: 15,
+        fontWeight: 'bold',
+      },
+    },
+    {
+      name: 'snowDepth',
+      axis: 'y',
+      position: 'top',
+      values: snowdepthTicks,
+      textFormatter: (v: number) => `${v}°`,
+      style: {
+        stroke: 'rgb(50,50,50)',
+        strokeWidth: 1,
+        fontSize: 15,
+        fontWeight: 'normal',
+      },
+    },
+  ];
+
   return (
     <Graph
-      title={`${station?.properties.name} (${station?.properties.elevation}m) - ${station?.properties.region}`}
+      title={`Températures (°C) — ${station?.properties.name} (${station?.properties.elevation}m) — ${station?.properties.region}`}
       viewBox={viewBox}
-      values={valuePoints}
+      values={values}
+      ticks={ticks}
       bounds={bounds}
       transformer={transformer}
-      ticks={temperatureTicks}
       width={width}
       height={height}
       zeroVisible={true}
+      colors={[
+        {
+          positiveColor: 'rgba(255, 123, 0, 1)',
+          negativeColor: 'rgba(0, 102, 255, 1)',
+        },
+      ]}
     />
   );
 }
