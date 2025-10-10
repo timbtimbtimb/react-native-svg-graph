@@ -35,9 +35,13 @@ export default function Wind({ name }: { name: string }) {
         const data: { properties: WeatherStationData } = await response.json();
         setStation(data);
         setValues([
-          data.properties.data.map(({ temperature, timestamp }) => [
+          data.properties.data.map(({ averageWindSpeed, timestamp }) => [
             timestamp * 1000,
-            temperature - 5,
+            averageWindSpeed ?? 0,
+          ]),
+          data.properties.data.map(({ windGustsSpeed, timestamp }) => [
+            timestamp * 1000,
+            (windGustsSpeed ?? 0) * 4,
           ]),
         ]);
       }
@@ -48,7 +52,7 @@ export default function Wind({ name }: { name: string }) {
   const bounds = getBounds(values.flat());
   const transformer = getTransofrmer(values.flat(), viewBox, bounds);
 
-  const temperatureTicks: [number, number][] = Array.from(
+  const windTicks: [number, number][] = Array.from(
     {
       length: Math.ceil(
         bounds.zeroVisibleMaxValueY - bounds.zeroVisibleMinValueY
@@ -118,11 +122,11 @@ export default function Wind({ name }: { name: string }) {
       },
     },
     {
-      name: 'temperatures',
+      name: 'vent',
       axis: 'y',
       position: 'top',
-      values: temperatureTicks,
-      textFormatter: (v: number) => `${v}°`,
+      values: windTicks,
+      textFormatter: (v: number) => `${v} km/h`,
       style: {
         stroke: 'rgb(50,50,50)',
         strokeWidth: 1,
@@ -134,7 +138,7 @@ export default function Wind({ name }: { name: string }) {
 
   return (
     <Graph
-      title={`Températures (°C) — ${station?.properties.name} (${station?.properties.elevation}m) — ${station?.properties.region}`}
+      title={`Vent (km/h) — ${station?.properties.name} (${station?.properties.elevation}m) — ${station?.properties.region}`}
       viewBox={viewBox}
       values={values}
       ticks={ticks}
@@ -145,8 +149,12 @@ export default function Wind({ name }: { name: string }) {
       zeroVisible={true}
       colors={[
         {
-          positiveColor: 'rgba(255, 123, 0, 1)',
-          negativeColor: 'rgba(0, 102, 255, 1)',
+          positiveColor: 'rgba(200, 200, 200, 1)',
+          negativeColor: 'rgba(200, 200, 200, 1)',
+        },
+        {
+          positiveColor: 'rgba(200, 200, 200, 0.33)',
+          negativeColor: 'rgba(200, 200, 200, 0.33)',
         },
       ]}
     />

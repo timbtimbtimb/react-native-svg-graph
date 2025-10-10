@@ -1,12 +1,14 @@
 import { StyleSheet, View } from 'react-native';
 import Temperatures from './Temperatures';
-import SnowDepth from './SnowDepth';
+// import SnowDepth from './SnowDepth';
+import Wind from './Wind';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Temperatures name={'74056006'} />
-      <SnowDepth name={'74056006'} />
+      <Wind name={'65059001'} />
+      <Temperatures name={'65059001'} />
+      {/* <SnowDepth name={'65059001'} /> */}
     </View>
   );
 }
