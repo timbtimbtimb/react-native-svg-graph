@@ -37,11 +37,11 @@ export default function Wind({ name }: { name: string }) {
         setValues([
           data.properties.data.map(({ averageWindSpeed, timestamp }) => [
             timestamp * 1000,
-            averageWindSpeed ?? 0,
+            ((averageWindSpeed ?? 0) / 1000) * 60 * 60,
           ]),
           data.properties.data.map(({ windGustsSpeed, timestamp }) => [
             timestamp * 1000,
-            (windGustsSpeed ?? 0) * 4,
+            ((windGustsSpeed ?? 0) / 1000) * 60 * 60,
           ]),
         ]);
       }

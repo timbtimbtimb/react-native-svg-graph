@@ -49,10 +49,6 @@ export default function Grid({
 
     const coords = axis === 'x' ? xCoords : yCoords;
 
-    if (axis === 'y') {
-      console.log(yCoords);
-    }
-
     const transformed = coords.map(transformer);
     const d = svgCoords2SvgLineCoords(transformed.slice(0, 2));
 

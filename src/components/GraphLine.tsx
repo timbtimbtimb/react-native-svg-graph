@@ -94,13 +94,13 @@ export default function GraphLine({
           <Stop offset="1" stopColor={negativeColor} stopOpacity={0.05} />
         </LinearGradient>
       </Defs>
-      <Mask id="negative-mask">
+      <Mask id={`negative-mask-${uniqueId}`}>
         <Polygon points={negativeMaskSvgCoords} fill={'white'} />
       </Mask>
-      <Mask id="positive-mask">
+      <Mask id={`positive-mask-${uniqueId}`}>
         <Polygon points={positiveMaskSvgCoords} fill={'white'} />
       </Mask>
-      <G mask="url(#positive-mask)">
+      <G mask={`url(#positive-mask-${uniqueId})`}>
         <Path
           d={line}
           stroke={positiveColor}
@@ -112,7 +112,7 @@ export default function GraphLine({
           fill={`url(#positive-gradient-${uniqueId})`}
         />
       </G>
-      <G mask="url(#negative-mask)">
+      <G mask={`url(#negative-mask-${uniqueId})`}>
         <Path
           d={line}
           stroke={negativeColor}
