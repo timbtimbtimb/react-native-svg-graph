@@ -5,6 +5,8 @@ import YAxis from './YAxis';
 import XAxis from './XAxis';
 import Grid, { type GridStyle } from './Grid';
 import getGraphData from '../utils/getGraphData';
+import Pointer from './Pointer';
+import { useRef, useState } from 'react';
 
 export type Ticks = Array<{
   axis: 'x' | 'y';
@@ -34,6 +36,14 @@ export default function Graph({
   colors,
   zeroVisible,
 }: Props) {
+  const svgElement = useRef<Svg>(null);
+  const [currentSizeRatio, setCurrentSizeRatio] = useState<[number, number]>([
+    1, 1,
+  ]);
+  const [pointerPosition, setPointerPosition] = useState<
+    [number, number] | null
+  >(null);
+
   const { viewBox, ticks, bounds, transformer } = getGraphData({
     textFormatter,
     width,
@@ -74,13 +84,39 @@ export default function Graph({
   });
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      onLayout={() => {
+        const rect = (
+          svgElement.current as null | HTMLElement
+        )?.getBoundingClientRect();
+        if (rect == null) return;
+        const { width: currentWidth, height: currentHeight } = rect;
+        setCurrentSizeRatio([width / currentWidth, height / currentHeight]);
+      }}
+    >
       <Svg
         viewBox={viewBox.join(' ')}
+        ref={(ref) => {
+          svgElement.current =
+            (ref?.elementRef as null | { current: Svg })?.current ?? null;
+        }}
         width={viewBox[2]}
         height={viewBox[3]}
         style={styles.svg}
+        onMouseLeave={() => {
+          setPointerPosition(null);
+        }}
+        onPointerMove={(event) => {
+          setPointerPosition([
+            event.nativeEvent.offsetX * currentSizeRatio[0],
+            event.nativeEvent.offsetY * currentSizeRatio[1],
+          ]);
+        }}
       >
+        {pointerPosition != null && (
+          <Pointer viewBox={viewBox} position={pointerPosition} />
+        )}
         <XAxis bounds={bounds} transformer={transformer} />
         <YAxis bounds={bounds} transformer={transformer} />
         {grids}

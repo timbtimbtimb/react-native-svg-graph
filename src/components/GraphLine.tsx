@@ -38,7 +38,7 @@ export default function GraphLine({
     ...values,
     [bounds.maxValueX, 0],
     [bounds.minValueX, 0],
-    values[0] as [number, number],
+    values[0] ?? [0, 0],
   ];
 
   const polygonSvgCoords = polygonValuePoints

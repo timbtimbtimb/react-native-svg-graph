@@ -45,8 +45,6 @@ export default function App() {
       const n = features[randomIndex] as WeatherStation;
       const { id } = n.properties;
 
-      console.log(id);
-
       const response = await fetch(
         `https://api.snowmap.fr/v3/weatherStations/${id}`
       );
