@@ -21,7 +21,7 @@ export default function getGraphData({
   const bounds = getBounds(values.flat());
   const transformer = getTransformer(values.flat(), viewBox, bounds);
 
-  const temperatureTicks: [number, number][] = Array.from(
+  const valuesTicks: [number, number][] = Array.from(
     {
       length: Math.ceil(
         bounds.zeroVisibleMaxValueY - bounds.zeroVisibleMinValueY
@@ -50,7 +50,7 @@ export default function getGraphData({
     {
       axis: 'y',
       position: 'top',
-      values: temperatureTicks,
+      values: valuesTicks,
       textFormatter,
       style: {
         stroke: 'rgb(50,50,50)',

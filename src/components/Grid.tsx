@@ -5,11 +5,7 @@ import type { Transformer } from '../utils/getTransformer';
 import type { Bounds } from '../utils/getBounds';
 import type { ColorValue } from 'react-native';
 import type { ViewBox } from '../utils/getViewBox';
-
-export const steps = [
-  0.001, 0.01, 0.1, 1, 2, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 10000, 100000,
-  1000000, 10000000,
-];
+import getReducedSteps from '../utils/getReducedSteps';
 
 export interface GridStyle {
   stroke: ColorValue;
@@ -18,7 +14,7 @@ export interface GridStyle {
   fontWeight: FontWeight;
 }
 
-interface Line {
+export interface Line {
   d: string;
   textX: number;
   textY: number;
@@ -70,7 +66,7 @@ export default function Grid({
   const averageLinesDistance = getAverageLinesDistance(rawLinesList, axis);
 
   const targetDistance =
-    axis === 'y' ? style.fontSize * 1.25 : style.fontSize * 4;
+    axis === 'y' ? style.fontSize * 1.25 : style.fontSize * 2;
 
   const reduceBy = averageLinesDistance / targetDistance;
 
@@ -194,20 +190,4 @@ function getAverageLinesDistance(lines: Line[], axis: 'x' | 'y') {
   );
 
   return dist;
-}
-
-function getReducedSteps(lines: Line[], reduceBy: number, axis: 'x' | 'y') {
-  const targetLength = lines.length * reduceBy;
-
-  const reducedSteps = steps
-    .map((step) => {
-      return lines.filter((line) => line[axis] % step === 0);
-    })
-    .filter((s) => {
-      return s.length < targetLength;
-    })
-    .sort((a, b) => b.length - a.length)
-    .at(0);
-
-  return reducedSteps;
 }

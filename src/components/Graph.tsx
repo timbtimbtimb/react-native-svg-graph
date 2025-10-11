@@ -108,19 +108,31 @@ export default function Graph({
           setPointerPosition(null);
         }}
         onPointerMove={(event) => {
-          setPointerPosition([
-            event.nativeEvent.offsetX * currentSizeRatio[0],
-            event.nativeEvent.offsetY * currentSizeRatio[1],
-          ]);
+          const xPosition = event.nativeEvent.offsetX * currentSizeRatio[0];
+          const xRatio = xPosition / width;
+          const clampedXRatio = Math.min(1, Math.max(0, xRatio));
+          const xValue =
+            clampedXRatio * (bounds.maxValueX - bounds.minValueX) +
+            bounds.minValueX;
+
+          const pointerValue = ((): [number, number] => {
+            if (values[0] == null) return [0, 0];
+            const valuesUnder = values[0].filter(([x]) => x < xValue);
+            const index = valuesUnder.length - 1;
+            if (index === -1) return [0, 0];
+            return values[0][index] as [number, number];
+          })();
+
+          setPointerPosition(transformer(pointerValue));
         }}
       >
-        {pointerPosition != null && (
-          <Pointer viewBox={viewBox} position={pointerPosition} />
-        )}
         <XAxis bounds={bounds} transformer={transformer} />
         <YAxis bounds={bounds} transformer={transformer} />
         {grids}
         {graphLines}
+        {pointerPosition != null && (
+          <Pointer viewBox={viewBox} position={pointerPosition} />
+        )}
       </Svg>
     </View>
   );
