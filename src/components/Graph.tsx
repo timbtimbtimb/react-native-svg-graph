@@ -40,9 +40,9 @@ export default function Graph({
   const [currentSizeRatio, setCurrentSizeRatio] = useState<[number, number]>([
     1, 1,
   ]);
-  const [pointerPosition, setPointerPosition] = useState<
-    [number, number] | null
-  >(null);
+  const [pointerValue, setPointerValue] = useState<[number, number] | null>(
+    null
+  );
 
   const { viewBox, ticks, bounds, transformer } = getGraphData({
     textFormatter,
@@ -105,7 +105,7 @@ export default function Graph({
         height={viewBox[3]}
         style={styles.svg}
         onMouseLeave={() => {
-          setPointerPosition(null);
+          setPointerValue(null);
         }}
         onPointerMove={(event) => {
           const xPosition = event.nativeEvent.offsetX * currentSizeRatio[0];
@@ -115,7 +115,7 @@ export default function Graph({
             clampedXRatio * (bounds.maxValueX - bounds.minValueX) +
             bounds.minValueX;
 
-          const pointerValue = ((): [number, number] => {
+          const value = ((): [number, number] => {
             if (values[0] == null) return [0, 0];
             const valuesUnder = values[0].filter(([x]) => x < xValue);
             const index = valuesUnder.length - 1;
@@ -123,15 +123,20 @@ export default function Graph({
             return values[0][index] as [number, number];
           })();
 
-          setPointerPosition(transformer(pointerValue));
+          setPointerValue(value);
         }}
       >
         <XAxis bounds={bounds} transformer={transformer} />
         <YAxis bounds={bounds} transformer={transformer} />
         {grids}
         {graphLines}
-        {pointerPosition != null && (
-          <Pointer viewBox={viewBox} position={pointerPosition} />
+        {pointerValue != null && (
+          <Pointer
+            viewBox={viewBox}
+            value={pointerValue}
+            formatter={textFormatter}
+            transformer={transformer}
+          />
         )}
       </Svg>
     </View>

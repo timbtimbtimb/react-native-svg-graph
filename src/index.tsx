@@ -63,18 +63,18 @@ export default function App() {
       setTemperatures([
         data.properties.data.map(({ temperature, timestamp }) => [
           timestamp * 1000,
-          temperature,
+          Math.round(temperature),
         ]),
       ]);
 
       setWind([
         data.properties.data.map(({ averageWindSpeed, timestamp }) => [
           timestamp * 1000,
-          ((averageWindSpeed ?? 0) / 1000) * 60 * 60,
+          Math.round(((averageWindSpeed ?? 0) / 1000) * 60 * 60),
         ]),
         data.properties.data.map(({ windGustsSpeed, timestamp }) => [
           timestamp * 1000,
-          ((windGustsSpeed ?? 0) / 1000) * 60 * 60,
+          Math.round(((windGustsSpeed ?? 0) / 1000) * 60 * 60),
         ]),
       ]);
 
