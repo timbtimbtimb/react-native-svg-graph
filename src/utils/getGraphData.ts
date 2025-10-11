@@ -1,29 +1,25 @@
-import getViewBox from '../utils/getViewBox';
-import getTransofrmer from '../utils/getTransformer';
-import getBounds from '../utils/getBounds';
-import Graph, { type Ticks } from './Graph';
-import getRoundDatesBetween from '../utils/getRoundDatesBetween';
-import type { ColorValue } from 'react-native';
+import type { Ticks } from '../components/Graph';
+import getBounds from './getBounds';
+import getRoundDatesBetween from './getRoundDatesBetween';
+import getTransformer from './getTransformer';
+import getViewBox from './getViewBox';
 
-export default function GraphMain({
-  values,
-  width,
-  height,
-  textFormatter,
-  colors,
-}: {
-  values: [number, number][][];
+interface Props {
+  textFormatter: (v: number) => string;
   width: number;
   height: number;
-  textFormatter: (v: number) => string;
-  colors: Array<{
-    positiveColor: ColorValue;
-    negativeColor: ColorValue;
-  }>;
-}) {
+  values: [number, number][][];
+}
+
+export default function getGraphData({
+  textFormatter,
+  width,
+  height,
+  values,
+}: Props) {
   const viewBox = getViewBox(width, height);
   const bounds = getBounds(values.flat());
-  const transformer = getTransofrmer(values.flat(), viewBox, bounds);
+  const transformer = getTransformer(values.flat(), viewBox, bounds);
 
   const temperatureTicks: [number, number][] = Array.from(
     {
@@ -51,6 +47,18 @@ export default function GraphMain({
   ).map((date) => [date.valueOf(), 0]);
 
   const ticks: Ticks = [
+    {
+      axis: 'y',
+      position: 'top',
+      values: temperatureTicks,
+      textFormatter,
+      style: {
+        stroke: 'rgb(50,50,50)',
+        strokeWidth: 1,
+        fontSize: 15,
+        fontWeight: 'normal',
+      },
+    },
     {
       axis: 'x',
       position: 'bottom',
@@ -92,31 +100,7 @@ export default function GraphMain({
         fontWeight: 'bold',
       },
     },
-    {
-      axis: 'y',
-      position: 'top',
-      values: temperatureTicks,
-      textFormatter,
-      style: {
-        stroke: 'rgb(50,50,50)',
-        strokeWidth: 1,
-        fontSize: 15,
-        fontWeight: 'normal',
-      },
-    },
   ];
 
-  return (
-    <Graph
-      viewBox={viewBox}
-      values={values}
-      ticks={ticks}
-      bounds={bounds}
-      transformer={transformer}
-      width={width}
-      height={height}
-      zeroVisible={true}
-      colors={colors}
-    />
-  );
+  return { viewBox, ticks, bounds, transformer };
 }

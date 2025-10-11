@@ -1,7 +1,7 @@
 import SunCalc, { type GetTimesResult } from 'suncalc';
 import { StyleSheet, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
-import GraphMain from './components/GraphMain';
+import Graph from './components/Graph';
 
 export interface WeatherStationData {
   id: string;
@@ -34,7 +34,6 @@ export default function App() {
   const [station, setStation] = useState<WeatherStation>();
   const [sun, setSun] = useState<GetTimesResult>();
 
-  const name = '65059001';
   const width = 1500;
   const height = 500;
 
@@ -44,9 +43,12 @@ export default function App() {
       const { features }: { features: WeatherStation[] } = await r.json();
       const randomIndex = Math.floor(Math.random() * features.length);
       const n = features[randomIndex] as WeatherStation;
+      const { id } = n.properties;
+
+      console.log(id);
 
       const response = await fetch(
-        `https://api.snowmap.fr/v3/weatherStations/${n.properties.id}`
+        `https://api.snowmap.fr/v3/weatherStations/${id}`
       );
       const data: WeatherStation = await response.json();
 
@@ -85,7 +87,7 @@ export default function App() {
         ]),
       ]);
     })();
-  }, [name]);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -107,10 +109,11 @@ export default function App() {
         </View>
       )}
       <View>
-        <GraphMain
+        <Graph
           values={temperatures}
           width={width}
           height={height}
+          zeroVisible={true}
           textFormatter={(v: number) => `${v}°`}
           colors={[
             {
@@ -122,10 +125,11 @@ export default function App() {
         <Text style={styles.graphTitle}>Températures (°C)</Text>
       </View>
       <View>
-        <GraphMain
+        <Graph
           values={wind}
           width={width}
           height={height}
+          zeroVisible={true}
           textFormatter={(v: number) => `${v} km/h`}
           colors={[
             {
@@ -141,10 +145,11 @@ export default function App() {
         <Text style={styles.graphTitle}>Vent et rafales (km/h)</Text>
       </View>
       <View>
-        <GraphMain
+        <Graph
           values={snowDepth}
           width={width}
           height={height}
+          zeroVisible={true}
           textFormatter={(v: number) => `${v} cm`}
           colors={[
             {

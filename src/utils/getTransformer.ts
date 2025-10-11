@@ -3,7 +3,7 @@ import type { ViewBox } from './getViewBox';
 
 export type Transformer = ([x, y]: [number, number]) => [number, number];
 
-export default function getValuesTransformer(
+export default function getTransformer(
   values: [number, number][],
   viewBox: ViewBox,
   bounds: Bounds

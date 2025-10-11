@@ -3,10 +3,8 @@ import Svg from 'react-native-svg';
 import GraphLine from './GraphLine';
 import YAxis from './YAxis';
 import XAxis from './XAxis';
-import type { ViewBox } from '../utils/getViewBox';
-import type { Bounds } from '../utils/getBounds';
-import type { Transformer } from '../utils/getTransformer';
 import Grid, { type GridStyle } from './Grid';
+import getGraphData from '../utils/getGraphData';
 
 export type Ticks = Array<{
   axis: 'x' | 'y';
@@ -17,29 +15,32 @@ export type Ticks = Array<{
 }>;
 
 interface Props {
-  viewBox: ViewBox;
-  values: [number, number][][];
-  ticks: Ticks;
+  textFormatter: (v: number) => string;
   width: number;
   height: number;
-  bounds: Bounds;
+  values: [number, number][][];
   colors: Array<{
     positiveColor: ColorValue;
     negativeColor: ColorValue;
   }>;
   zeroVisible: boolean;
-  transformer: Transformer;
 }
 
 export default function Graph({
-  viewBox,
+  textFormatter,
+  width,
+  height,
   values,
-  bounds,
-  transformer,
   colors,
-  ticks,
   zeroVisible,
 }: Props) {
+  const { viewBox, ticks, bounds, transformer } = getGraphData({
+    textFormatter,
+    width,
+    height,
+    values,
+  });
+
   const grids = ticks.map((tick, i) => {
     return (
       <Grid
