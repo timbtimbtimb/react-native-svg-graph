@@ -3,6 +3,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import Graph from './components/Graph';
 
+// const HOST = 'https://api.snowmap.fr';
+const HOST = 'http://localhost:8080';
+
 export interface WeatherStationData {
   id: string;
   name: string;
@@ -39,15 +42,13 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      const r = await fetch(`https://api.snowmap.fr/v3/weatherStations`);
+      const r = await fetch(`${HOST}/v3/weatherStations`);
       const { features }: { features: WeatherStation[] } = await r.json();
       const randomIndex = Math.floor(Math.random() * features.length);
       const n = features[randomIndex] as WeatherStation;
       const { id } = n.properties;
 
-      const response = await fetch(
-        `https://api.snowmap.fr/v3/weatherStations/${id}`
-      );
+      const response = await fetch(`${HOST}/v3/weatherStations/${id}`);
       const data: WeatherStation = await response.json();
 
       setStation(data);

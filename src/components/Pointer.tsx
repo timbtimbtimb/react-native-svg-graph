@@ -16,9 +16,16 @@ export default function Pointer({
   transformer,
 }: Props) {
   const position = transformer(value);
-  const valueText = Math.round(value[1]);
-  const text = formatter ? formatter(valueText) : valueText.toString();
+  const valueText1 = Math.round(value[1]);
+  const text1 = formatter ? formatter(valueText1) : valueText1.toString();
+  const valueText2 = Math.round(value[0]);
+  const date = new Date(valueText2);
+  const text2 =
+    date.getHours().toString().padStart(2, '0') +
+    ':' +
+    date.getMinutes().toString().padStart(2, '0');
   const fontSize = 15;
+  const width = fontSize * Math.max(text1.length, text2.length);
 
   return (
     <G>
@@ -42,10 +49,10 @@ export default function Pointer({
       />
       <Circle fill={'white'} r={3} cx={position[0]} cy={position[1]} />
       <Rect
-        x={position[0] - (fontSize * text.length) / 2}
-        y={position[1] + fontSize * 0.75}
-        width={fontSize * text.length}
-        height={fontSize * 1.5}
+        x={position[0] - width / 2}
+        y={position[1] + fontSize * 0.66}
+        width={width}
+        height={fontSize * 2.5}
         stroke={'white'}
         strokeWidth={1}
         fill={'rgba(0,0,0,0.5)'}
@@ -59,9 +66,21 @@ export default function Pointer({
         textAnchor="middle"
         alignmentBaseline="hanging"
         fontFamily="sans"
+        fontWeight="bold"
         fontSize={fontSize}
       >
-        {text}
+        {text1}
+      </Text>
+      <Text
+        x={position[0]}
+        y={position[1] + fontSize + fontSize}
+        fill={'white'}
+        textAnchor="middle"
+        alignmentBaseline="hanging"
+        fontFamily="sans"
+        fontSize={fontSize * 0.85}
+      >
+        {text2}
       </Text>
     </G>
   );
