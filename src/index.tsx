@@ -35,7 +35,7 @@ export default function App() {
   const [sun, setSun] = useState<GetTimesResult>();
 
   const width = 1500;
-  const height = 500;
+  const height = 250;
 
   useEffect(() => {
     (async () => {

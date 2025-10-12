@@ -82,15 +82,15 @@ export default function getGraphData({
         const date = new Date(v);
         return [
           [
+            'dimanche',
             'lundi',
             'mardi',
             'mercredi',
             'jeudi',
             'vendredi',
             'samedi',
-            'dimanche',
-          ][date.getDay() - 1],
-          date.getDay().toString(),
+          ][date.getDay()],
+          date.getDate().toString(),
         ].join(' ');
       },
       style: {
