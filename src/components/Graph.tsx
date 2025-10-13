@@ -40,7 +40,7 @@ export default function Graph({
   const [currentSizeRatio, setCurrentSizeRatio] = useState<[number, number]>([
     1, 1,
   ]);
-  const [pointerValue, setPointerValue] = useState<[number, number] | null>(
+  const [pointerValues, setPointerValues] = useState<[number, number][] | null>(
     null
   );
 
@@ -105,7 +105,7 @@ export default function Graph({
         height={viewBox[3]}
         style={styles.svg}
         onMouseLeave={() => {
-          setPointerValue(null);
+          setPointerValues(null);
         }}
         onPointerMove={(event) => {
           const xPosition = event.nativeEvent.offsetX * currentSizeRatio[0];
@@ -115,27 +115,27 @@ export default function Graph({
             clampedXRatio * (bounds.maxValueX - bounds.minValueX) +
             bounds.minValueX;
 
-          const value = ((): [number, number] => {
-            if (values[0] == null) return [0, 0];
-            const valuesUnder = values[0].filter(([x]) => x < xValue);
-            const index = valuesUnder.length - 1;
-            if (index === -1) return [0, 0];
-            return values[0][index] as [number, number];
-          })();
-
-          setPointerValue(value);
+          setPointerValues(
+            values.map((value) => {
+              const valuesUnder = value.filter(([x]) => x < xValue);
+              const index = valuesUnder.length - 1;
+              if (index === -1) return [0, 0];
+              return value[index] as [number, number];
+            })
+          );
         }}
       >
         <XAxis bounds={bounds} transformer={transformer} />
         <YAxis bounds={bounds} transformer={transformer} />
         {grids}
         {graphLines}
-        {pointerValue != null && (
+        {pointerValues != null && (
           <Pointer
             viewBox={viewBox}
-            value={pointerValue}
+            values={pointerValues}
             formatter={textFormatter}
             transformer={transformer}
+            colors={colors}
           />
         )}
       </Svg>
