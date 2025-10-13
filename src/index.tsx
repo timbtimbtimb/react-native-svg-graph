@@ -3,8 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import Graph from './components/Graph';
 
-// const HOST = 'https://api.snowmap.fr';
-const HOST = 'http://localhost:8080';
+const HOST = 'https://api.snowmap.fr';
+// const HOST = 'http://localhost:8080';
 
 export interface WeatherStationData {
   id: string;
