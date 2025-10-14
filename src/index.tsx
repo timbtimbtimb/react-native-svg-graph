@@ -14,12 +14,12 @@ export interface WeatherStationData {
   data: Array<{
     timestamp: number;
     temperature: number;
-    snowDepth: number | null;
-    lastHourPrecipitations: number | null;
-    averageWindSpeed: number | null;
-    averageWindDirection: number | null;
-    windGustsSpeed: number | null;
-    windGustsDirection: number | null;
+    snowDepth: number;
+    lastHourPrecipitations: number;
+    averageWindSpeed: number;
+    averageWindDirection: number;
+    windGustsSpeed: number;
+    windGustsDirection: number;
   }>;
 }
 
@@ -71,11 +71,11 @@ export default function App() {
       setWind([
         data.properties.data.map(({ averageWindSpeed, timestamp }) => [
           timestamp * 1000,
-          ((averageWindSpeed ?? 0) / 1000) * 60 * 60,
+          averageWindSpeed,
         ]),
         data.properties.data.map(({ windGustsSpeed, timestamp }) => [
           timestamp * 1000,
-          ((windGustsSpeed ?? 0) / 1000) * 60 * 60,
+          windGustsSpeed,
         ]),
       ]);
 
@@ -93,7 +93,7 @@ export default function App() {
       {station && (
         <View>
           <Text style={styles.title}>
-            {`${station?.properties.name} (${station?.properties.elevation} m)`}
+            {`${station?.properties.name} (${station?.properties.elevation} m) - [${station?.properties.id}]`}
           </Text>
           <Text style={styles.subtitle}>{station?.properties.region}</Text>
           {sun && (
