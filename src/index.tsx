@@ -166,8 +166,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'rgb(20,20,20)',
-    gap: 50,
-    padding: 20,
     overflow: 'scroll',
     width: '100%',
   },

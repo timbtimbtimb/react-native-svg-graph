@@ -34,6 +34,7 @@ export default function Pointer({
 
       return (
         <Text
+          key={i}
           x={mainPosition[0]}
           y={mainPosition[1] + fontSize * (i + 1)}
           fill={'white'}
