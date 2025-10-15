@@ -135,7 +135,6 @@ export default function Graph({
             values={pointerValues}
             formatter={textFormatter}
             transformer={transformer}
-            colors={colors}
           />
         )}
       </Svg>
