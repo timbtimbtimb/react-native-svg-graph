@@ -33,18 +33,20 @@ export default function GraphLine({
 }): ReactElement {
   const uniqueId = useId();
   const line = svgCoords2SvgLineCoords(values.map(transformer));
-
-  const polygonValuePoints: [number, number][] = [
-    ...values,
-    [bounds.maxValueX, 0],
-    [bounds.minValueX, 0],
-    values[0] ?? [0, 0],
-  ];
-
-  const polygonSvgCoords = polygonValuePoints
-    .map(transformer)
-    .map((point) => point.join(','))
-    .join(' ');
+  const loopedLine = svgCoords2SvgLineCoords(
+    (
+      [
+        ...values,
+        values.at(-1) ?? [0, 0],
+        [bounds.maxValueX, values.at(-1)?.[1] ?? 0],
+        [bounds.maxValueX, bounds.zeroVisibleMinValueY],
+        [bounds.maxValueX, bounds.zeroVisibleMinValueY],
+        [bounds.minValueX, bounds.zeroVisibleMinValueY],
+        [bounds.minValueX, bounds.zeroVisibleMinValueY],
+        values.at(0) ?? [0, 0],
+      ] as [number, number][]
+    ).map(transformer)
+  );
 
   const negativeMaskValuePoints: [number, number][] = [
     [bounds.minValueX, 0],
@@ -107,10 +109,7 @@ export default function GraphLine({
           strokeWidth={strokeWidth ?? 2}
           fill="none"
         />
-        <Polygon
-          points={polygonSvgCoords}
-          fill={`url(#positive-gradient-${uniqueId})`}
-        />
+        <Path d={loopedLine} fill={`url(#positive-gradient-${uniqueId})`} />
       </G>
       <G mask={`url(#negative-mask-${uniqueId})`}>
         <Path
@@ -119,10 +118,7 @@ export default function GraphLine({
           strokeWidth={strokeWidth ?? 2}
           fill="none"
         />
-        <Polygon
-          points={polygonSvgCoords}
-          fill={`url(#negative-gradient-${uniqueId})`}
-        />
+        <Path d={loopedLine} fill={`url(#negative-gradient-${uniqueId})`} />
       </G>
     </G>
   );
