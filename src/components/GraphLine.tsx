@@ -51,8 +51,8 @@ export default function GraphLine({
   const negativeMaskValuePoints: [number, number][] = [
     [bounds.minValueX, 0],
     [bounds.maxValueX, 0],
-    [bounds.maxValueX, bounds.zeroVisibleMinValueY],
-    [bounds.minValueX, bounds.zeroVisibleMinValueY],
+    [bounds.maxValueX, bounds.zeroVisibleMinValueY * 2],
+    [bounds.minValueX, bounds.zeroVisibleMinValueY * 2],
   ];
 
   const negativeMaskSvgCoords = negativeMaskValuePoints
@@ -63,8 +63,8 @@ export default function GraphLine({
   const positiveMaskValuePoints: [number, number][] = [
     [bounds.minValueX, 0],
     [bounds.maxValueX, 0],
-    [bounds.maxValueX, bounds.zeroVisibleMaxValueY],
-    [bounds.minValueX, bounds.zeroVisibleMaxValueY],
+    [bounds.maxValueX, bounds.zeroVisibleMaxValueY * 2],
+    [bounds.minValueX, bounds.zeroVisibleMaxValueY * 2],
   ];
 
   const positiveMaskSvgCoords = positiveMaskValuePoints
@@ -102,13 +102,13 @@ export default function GraphLine({
       <Mask id={`positive-mask-${uniqueId}`}>
         <Polygon points={positiveMaskSvgCoords} fill={'white'} />
       </Mask>
+      <Path
+        d={line}
+        stroke={positiveColor}
+        strokeWidth={strokeWidth ?? 2}
+        fill="none"
+      />
       <G mask={`url(#positive-mask-${uniqueId})`}>
-        <Path
-          d={line}
-          stroke={positiveColor}
-          strokeWidth={strokeWidth ?? 2}
-          fill="none"
-        />
         <Path d={loopedLine} fill={`url(#positive-gradient-${uniqueId})`} />
       </G>
       <G mask={`url(#negative-mask-${uniqueId})`}>

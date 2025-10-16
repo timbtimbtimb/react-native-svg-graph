@@ -26,6 +26,7 @@ interface Props {
     negativeColor: ColorValue;
   }>;
   zeroVisible: boolean;
+  fontSize: number;
 }
 
 export default function Graph({
@@ -35,6 +36,7 @@ export default function Graph({
   values,
   colors,
   zeroVisible,
+  fontSize,
 }: Props) {
   const svgElement = useRef<Svg>(null);
   const [pointerValues, setPointerValues] = useState<[number, number][] | null>(
@@ -46,6 +48,7 @@ export default function Graph({
     width,
     height,
     values,
+    fontSize,
   });
 
   const grids = ticks.map((tick, i) => {
@@ -82,7 +85,13 @@ export default function Graph({
 
   return (
     <Svg
-      viewBox={viewBox.join(' ')}
+      viewBox={[
+        viewBox[0] + fontSize * -5,
+        viewBox[1] - fontSize * 1.5,
+        viewBox[2] + fontSize * 5,
+        viewBox[3] + fontSize * 3,
+      ].join(' ')}
+      preserveAspectRatio="none slice"
       ref={(ref) => {
         svgElement.current =
           (ref?.elementRef as null | { current: Svg })?.current ?? null;
@@ -133,7 +142,7 @@ export default function Graph({
 
 const styles = StyleSheet.create({
   svg: {
-    overflow: 'visible',
+    overflow: 'hidden',
     width: 'auto',
     height: 'auto',
   },

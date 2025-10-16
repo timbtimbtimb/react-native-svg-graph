@@ -9,6 +9,7 @@ interface Props {
   width: number;
   height: number;
   values: [number, number][][];
+  fontSize: number;
 }
 
 export default function getGraphData({
@@ -16,6 +17,7 @@ export default function getGraphData({
   width,
   height,
   values,
+  fontSize,
 }: Props) {
   const viewBox = getViewBox(width, height);
   const bounds = getBounds(values.flat());
@@ -55,7 +57,7 @@ export default function getGraphData({
       style: {
         stroke: 'rgb(50,50,50)',
         strokeWidth: 1,
-        fontSize: 15,
+        fontSize,
         fontWeight: 'normal',
       },
     },
@@ -70,7 +72,7 @@ export default function getGraphData({
       style: {
         stroke: 'rgb(50,50,50)',
         strokeWidth: 1,
-        fontSize: 15,
+        fontSize,
         fontWeight: 'bold',
       },
     },
@@ -96,7 +98,7 @@ export default function getGraphData({
       style: {
         stroke: 'gray',
         strokeWidth: 3,
-        fontSize: 15,
+        fontSize,
         fontWeight: 'bold',
       },
     },

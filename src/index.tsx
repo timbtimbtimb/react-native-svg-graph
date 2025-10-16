@@ -113,6 +113,7 @@ export default function App() {
           width={width}
           height={height}
           zeroVisible={true}
+          fontSize={15}
           textFormatter={(v: number) => `${v}°`}
           colors={[
             {
@@ -129,6 +130,7 @@ export default function App() {
           width={width}
           height={height}
           zeroVisible={true}
+          fontSize={15}
           textFormatter={(v: number) => `${v} km/h`}
           colors={[
             {
@@ -149,6 +151,7 @@ export default function App() {
           width={width}
           height={height}
           zeroVisible={true}
+          fontSize={15}
           textFormatter={(v: number) => `${v} cm`}
           colors={[
             {
