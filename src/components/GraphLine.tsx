@@ -32,7 +32,7 @@ export default function GraphLine({
   strokeWidth?: LineProps['strokeWidth'];
 }): ReactElement {
   const uniqueId = useId();
-  const line = svgCoords2SvgLineCoords(values.map(transformer));
+  const line = svgCoords2SvgLineCoords(values.map(transformer), true);
   const loopedLine = svgCoords2SvgLineCoords(
     (
       [
@@ -45,7 +45,8 @@ export default function GraphLine({
         [bounds.minValueX, bounds.zeroVisibleMinValueY],
         values.at(0) ?? [0, 0],
       ] as [number, number][]
-    ).map(transformer)
+    ).map(transformer),
+    true
   );
 
   const negativeMaskValuePoints: [number, number][] = [

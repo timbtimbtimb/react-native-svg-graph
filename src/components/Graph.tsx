@@ -39,6 +39,7 @@ export default function Graph({
   fontSize,
 }: Props) {
   const svgElement = useRef<Svg>(null);
+  const [scaleRatio, setScaleRatio] = useState<number>(1);
   const [pointerValues, setPointerValues] = useState<[number, number][] | null>(
     null
   );
@@ -85,20 +86,23 @@ export default function Graph({
 
   return (
     <Svg
-      viewBox={[
-        viewBox[0] + fontSize * -5,
-        viewBox[1] - fontSize * 1.5,
-        viewBox[2] + fontSize * 5,
-        viewBox[3] + fontSize * 3,
-      ].join(' ')}
-      preserveAspectRatio="none slice"
+      viewBox={viewBox.join(' ')}
       ref={(ref) => {
         svgElement.current =
           (ref?.elementRef as null | { current: Svg })?.current ?? null;
+        const rect = (
+          svgElement.current as null | HTMLElement
+        )?.getBoundingClientRect();
+        if (rect == null) return;
+        setScaleRatio(rect.width / width);
       }}
       width={viewBox[2]}
       height={viewBox[3]}
-      style={styles.svg}
+      style={{
+        ...styles.svg,
+        marginVertical: scaleRatio * fontSize,
+        marginLeft: scaleRatio * fontSize * 5,
+      }}
       onMouseLeave={() => {
         setPointerValues(null);
       }}
@@ -116,10 +120,17 @@ export default function Graph({
 
         setPointerValues(
           values.map((value) => {
-            const valuesUnder = value.filter(([x]) => x < xValue);
-            const index = valuesUnder.length - 1;
-            if (index === -1) return [0, 0];
-            return value[index] as [number, number];
+            const indexUnder = Math.max(
+              0,
+              value.findIndex(([x]) => x >= xValue) - 1
+            );
+            const valueUnder = value[indexUnder] as [number, number];
+            const valueOver = value[
+              Math.min(indexUnder + 1, value.length - 1)
+            ] as [number, number];
+            return xValue - valueUnder[0] > valueOver[0] - xValue
+              ? valueOver
+              : valueUnder;
           })
         );
       }}
@@ -142,7 +153,7 @@ export default function Graph({
 
 const styles = StyleSheet.create({
   svg: {
-    overflow: 'hidden',
+    overflow: 'visible',
     width: 'auto',
     height: 'auto',
   },

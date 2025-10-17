@@ -49,8 +49,14 @@ export default function Pointer({
       );
     });
 
-  const circles = positions.map((position) => (
-    <Circle fill={'white'} r={3} cx={position[0]} cy={position[1]} />
+  const circles = positions.map((position, i) => (
+    <Circle
+      key={[i, ...position].join()}
+      fill={'white'}
+      r={3}
+      cx={position[0]}
+      cy={position[1]}
+    />
   ));
 
   return (
