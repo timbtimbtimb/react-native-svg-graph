@@ -1,8 +1,16 @@
-import type { Line } from '../components/Grid';
 import type { Bounds } from './getBounds';
 import type { Transformer } from './getTransformer';
 import type { ViewBox } from './getViewBox';
 import svgCoords2SvgLineCoords from './svgCoords2SvgLineCoords';
+
+type Line = {
+  d: string;
+  textX: number;
+  textY: number;
+  text: string;
+  x: number;
+  y: number;
+};
 
 export default function getRawLinesList(
   values: [number, number][],

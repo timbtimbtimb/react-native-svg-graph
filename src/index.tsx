@@ -1,92 +1,12 @@
-import SunCalc, { type GetTimesResult } from 'suncalc';
 import { StyleSheet, Text, View } from 'react-native';
-import { useEffect, useState } from 'react';
 import Graph from './components/Graph';
-
-const HOST = 'https://api.snowmap.fr';
-// const HOST = 'http://localhost:8080';
-
-export interface WeatherStationData {
-  id: string;
-  name: string;
-  region: string;
-  elevation: number;
-  data: Array<{
-    timestamp: number;
-    temperature: number;
-    snowDepth: number;
-    lastHourPrecipitations: number;
-    averageWindSpeed: number;
-    averageWindDirection: number;
-    windGustsSpeed: number;
-    windGustsDirection: number;
-  }>;
-}
-
-export type WeatherStation = {
-  geometry: { coordinates: [number, number, number] };
-  properties: WeatherStationData;
-};
+import useSourceData from './hooks/useSourceData';
 
 export default function App() {
-  const [temperatures, setTemperatures] = useState<[number, number][][]>([
-    [[0, 0]],
-  ]);
-  const [snowDepth, setSnowDepth] = useState<[number, number][][]>([[[0, 0]]]);
-  const [wind, setWind] = useState<[number, number][][]>([[[0, 0]]]);
-  const [station, setStation] = useState<WeatherStation>();
-  const [sun, setSun] = useState<GetTimesResult>();
+  const { temperatures, wind, snowDepth, station, sun } = useSourceData();
 
   const width = 1500;
   const height = 250;
-
-  useEffect(() => {
-    (async () => {
-      const r = await fetch(`${HOST}/v3/weatherStations`);
-      const { features }: { features: WeatherStation[] } = await r.json();
-      const randomIndex = Math.floor(Math.random() * features.length);
-      const n = features[randomIndex] as WeatherStation;
-      const { id } = n.properties;
-
-      const response = await fetch(`${HOST}/v3/weatherStations/${id}`);
-      const data: WeatherStation = await response.json();
-
-      setStation(data);
-
-      setSun(
-        SunCalc.getTimes(
-          new Date(),
-          data.geometry.coordinates[1],
-          data.geometry.coordinates[0]
-        )
-      );
-
-      setTemperatures([
-        data.properties.data.map(({ temperature, timestamp }) => [
-          timestamp * 1000,
-          temperature,
-        ]),
-      ]);
-
-      setWind([
-        data.properties.data.map(({ averageWindSpeed, timestamp }) => [
-          timestamp * 1000,
-          averageWindSpeed,
-        ]),
-        data.properties.data.map(({ windGustsSpeed, timestamp }) => [
-          timestamp * 1000,
-          windGustsSpeed,
-        ]),
-      ]);
-
-      setSnowDepth([
-        data.properties.data.map(({ snowDepth: s, timestamp }) => [
-          timestamp * 1000,
-          s ?? 0,
-        ]),
-      ]);
-    })();
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -114,7 +34,7 @@ export default function App() {
           height={height}
           zeroVisible={true}
           fontSize={15}
-          textFormatter={(v: number) => `${v}°`}
+          formatter={(v: number) => `${v}°`}
           colors={[
             {
               positiveColor: 'rgba(255, 123, 0, 1)',
@@ -131,7 +51,7 @@ export default function App() {
           height={height}
           zeroVisible={true}
           fontSize={15}
-          textFormatter={(v: number) => `${v} km/h`}
+          formatter={(v: number) => `${v} km/h`}
           colors={[
             {
               positiveColor: 'rgba(200, 200, 200, 1)',
@@ -152,7 +72,7 @@ export default function App() {
           height={height}
           zeroVisible={true}
           fontSize={15}
-          textFormatter={(v: number) => `${v} cm`}
+          formatter={(v: number) => `${v} cm`}
           colors={[
             {
               positiveColor: 'rgba(0, 102, 255, 1)',

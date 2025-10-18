@@ -1,4 +1,4 @@
-import type { Line } from '../components/Grid';
+import type { Line } from '../components/Grids';
 
 const defaultSteps = [
   0.001, 0.01, 0.1, 1, 2, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 10000, 100000,
