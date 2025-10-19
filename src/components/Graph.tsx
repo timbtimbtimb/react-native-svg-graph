@@ -1,53 +1,35 @@
-import YAxis from './YAxis';
-import XAxis from './XAxis';
-import {
-  GraphContextProvider,
-  type Color,
-  type Formatter,
-} from '../contexts/GraphContext';
-import Main from './Main';
-import Grids from './Grids';
-import Lines from './Lines';
-import Pointer from './Pointer';
-import { PointerContextProvider } from '../contexts/PointerContext';
+import Svg from 'react-native-svg';
+import { useGraphContext } from '../contexts/GraphContext';
+import { StyleSheet } from 'react-native';
+import type { ReactNode } from 'react';
+import { usePointerContext } from '../contexts/PointerContext';
 
-interface Props {
-  formatter: Formatter;
-  width: number;
-  height: number;
-  values: [number, number][][];
-  colors: Color[];
-  zeroVisible: boolean;
-  fontSize: number;
-}
+export default function Graph({ children }: { children: ReactNode }) {
+  const { viewBox, margins, svgRef } = useGraphContext();
+  const { onPointerMove, onMouseLeave } = usePointerContext();
 
-export default function Graph({
-  formatter,
-  width,
-  height,
-  values,
-  colors,
-  fontSize,
-}: Props) {
   return (
-    <GraphContextProvider
-      width={width}
-      height={height}
-      fontSize={fontSize}
-      values={values}
-      zeroVisible={true}
-      colors={colors}
-      formatter={formatter}
+    <Svg
+      viewBox={viewBox.join(' ')}
+      ref={svgRef}
+      width={viewBox[2]}
+      height={viewBox[3]}
+      style={{
+        ...styles.svg,
+        ...margins,
+      }}
+      onMouseLeave={onMouseLeave}
+      onPointerMove={onPointerMove}
     >
-      <PointerContextProvider>
-        <Main>
-          <XAxis />
-          <YAxis />
-          <Grids />
-          <Lines />
-          <Pointer />
-        </Main>
-      </PointerContextProvider>
-    </GraphContextProvider>
+      {children}
+    </Svg>
   );
 }
+
+const styles = StyleSheet.create({
+  svg: {
+    overflow: 'visible',
+    width: 'auto',
+    height: 'auto',
+  },
+});
