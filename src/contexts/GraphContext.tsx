@@ -96,8 +96,6 @@ export function GraphContextProvider({
   colors,
   formatter,
 }: Props): ReactElement {
-  console.log('GraphContextProvider');
-
   const svgElement = useRef<Svg>(null);
   const [scaleRatio, setScaleRatio] = useState<number>(1);
 
