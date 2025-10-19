@@ -1,42 +1,17 @@
 import { Circle, G, Line, Rect, Text } from 'react-native-svg';
-import type { ViewBox } from '../utils/getViewBox';
-import type { Transformer } from '../utils/getTransformer';
+import { useGraphContext } from './GraphContext';
+import { useMemo } from 'react';
 
-interface Props {
-  viewBox: ViewBox;
-  values: [number, number][];
-  transformer: Transformer;
-  formatter?: (v: number) => string;
-}
+export default function Pointer() {
+  const { fontSize, pointer } = useGraphContext();
 
-export default function Pointer({
-  viewBox,
-  values,
-  formatter,
-  transformer,
-}: Props) {
-  const positions = values.map(transformer);
-  const timestamp = Math.round(values[0]?.[0] ?? 0);
-  const date = new Date(timestamp);
-  const dateText =
-    date.getHours().toString().padStart(2, '0') +
-    ':' +
-    date.getMinutes().toString().padStart(2, '0');
-  const fontSize = 15;
-  const width = fontSize * 5;
-  const mainPosition = positions.sort((a, b) => b[1] - a[1]).at(0) ?? [0, 0];
-
-  const valuesTextsElements = values
-    .sort((a, b) => b[1] - a[1])
-    .map((value, i) => {
-      const v = Math.round(value[1]);
-      const t = formatter ? formatter(v) : v.toString();
-
+  const textsElements = useMemo(() => {
+    return pointer.texts.map(({ t, x, y }, i) => {
       return (
         <Text
           key={i}
-          x={mainPosition[0]}
-          y={mainPosition[1] + fontSize * (i + 1)}
+          x={x}
+          y={y}
           fill={'white'}
           textAnchor="middle"
           alignmentBaseline="hanging"
@@ -48,60 +23,59 @@ export default function Pointer({
         </Text>
       );
     });
+  }, [fontSize, pointer]);
 
-  const circles = positions.map((position, i) => (
-    <Circle
-      key={[i, ...position].join()}
-      fill={'white'}
-      r={3}
-      cx={position[0]}
-      cy={position[1]}
-    />
-  ));
+  const circlesElements = useMemo(() => {
+    return pointer.circles.map(({ cx, cy }, i) => (
+      <Circle key={[i, cx, cy].join()} fill={'white'} r={3} cx={cx} cy={cy} />
+    ));
+  }, [pointer]);
+
+  if (pointer.circles.length === 0) return;
 
   return (
     <G>
       <Line
-        x1={mainPosition[0]}
-        x2={mainPosition[0]}
-        y1={mainPosition[1]}
-        y2={viewBox[3] + viewBox[1]}
+        x1={pointer.horizontalLine.x1}
+        x2={pointer.horizontalLine.x2}
+        y1={pointer.horizontalLine.y1}
+        y2={pointer.horizontalLine.y2}
         stroke={'gray'}
         strokeWidth={1}
         strokeDasharray={3}
       />
       <Line
-        x1={viewBox[0]}
-        x2={mainPosition[0]}
-        y1={mainPosition[1]}
-        y2={mainPosition[1]}
+        x1={pointer.verticalLine.x1}
+        x2={pointer.verticalLine.x2}
+        y1={pointer.verticalLine.y1}
+        y2={pointer.verticalLine.y2}
         stroke={'gray'}
         strokeWidth={1}
         strokeDasharray={3}
       />
-      {circles}
+      {circlesElements}
       <Rect
-        x={mainPosition[0] - width / 2}
-        y={mainPosition[1] + fontSize * 0.66}
-        width={width}
-        height={fontSize * (values.length + 1.5)}
+        x={pointer.rect.x}
+        y={pointer.rect.y}
+        width={pointer.rect.width}
+        height={pointer.rect.height}
         stroke={'white'}
         strokeWidth={1}
         fill={'rgba(0,0,0,0.5)'}
         rx={3}
         ry={3}
       />
-      {valuesTextsElements}
+      {textsElements}
       <Text
-        x={mainPosition[0]}
-        y={mainPosition[1] + fontSize * (values.length + 1)}
+        x={pointer.dateText.x}
+        y={pointer.dateText.y}
         fill={'white'}
         textAnchor="middle"
         alignmentBaseline="hanging"
         fontFamily="sans"
         fontSize={fontSize * 0.85}
       >
-        {dateText}
+        {pointer.dateText.t}
       </Text>
     </G>
   );

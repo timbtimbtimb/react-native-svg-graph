@@ -8,6 +8,7 @@ import {
 import Main from './Main';
 import Grids from './Grids';
 import Lines from './Lines';
+import Pointer from './Pointer';
 
 interface Props {
   formatter: Formatter;
@@ -42,14 +43,7 @@ export default function Graph({
         <YAxis />
         <Grids />
         <Lines />
-        {/* {pointerValues != null && (
-          <Pointer
-            viewBox={viewBox}
-            values={pointerValues}
-            formatter={formatter}
-            transformer={transformer}
-          />
-        )} */}
+        <Pointer />
       </Main>
     </GraphContextProvider>
   );

@@ -53,10 +53,46 @@ interface GraphContextType {
     positivePolygon: string;
     negativePolygon: string;
   }>;
+  pointer: Pointer;
   transformer: Transformer;
   formatter: Formatter;
   onPointerMove: ((event: PointerEvent) => void) | undefined;
   onMouseLeave: ((event: MouseEvent) => void) | undefined;
+}
+
+interface Pointer {
+  circles: {
+    cx: number;
+    cy: number;
+  }[];
+  texts: {
+    t: string;
+    x: number;
+    y: number;
+  }[];
+  rect: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  dateText: {
+    t: string;
+    x: number;
+    y: number;
+  };
+  horizontalLine: {
+    x1: number;
+    x2: number;
+    y1: number;
+    y2: number;
+  };
+  verticalLine: {
+    x1: number;
+    x2: number;
+    y1: number;
+    y2: number;
+  };
 }
 
 type CreateContextType = undefined | GraphContextType;
@@ -150,6 +186,65 @@ export function GraphContextProvider({
     [fontSize, scaleRatio]
   );
 
+  const pointer = useMemo<Pointer>(() => {
+    const positions = (pointerValues ?? []).map(transformer);
+    const timestamp = Math.round((pointerValues ?? [])[0]?.[0] ?? 0);
+    const date = new Date(timestamp);
+    const dateText =
+      date.getHours().toString().padStart(2, '0') +
+      ':' +
+      date.getMinutes().toString().padStart(2, '0');
+    const w = fontSize * 5;
+    const mainPosition = positions.sort((a, b) => b[1] - a[1]).at(0) ?? [0, 0];
+
+    const texts = (pointerValues ?? [])
+      .sort((a, b) => b[1] - a[1])
+      .map((value, i) => {
+        const v = Math.round(value[1]);
+        const t = formatter ? formatter(v) : v.toString();
+        return {
+          t,
+          x: mainPosition[0],
+          y: mainPosition[1] + fontSize * (i + 1),
+        };
+      });
+
+    const circles = positions.map((position) => ({
+      cx: position[0],
+      cy: position[1],
+    }));
+
+    const rect = {
+      x: mainPosition[0] - w / 2,
+      y: mainPosition[1] + fontSize * 0.66,
+      width: w,
+      height: fontSize * (values.length + 1.5),
+    };
+
+    return {
+      circles,
+      texts,
+      rect,
+      dateText: {
+        t: dateText,
+        x: mainPosition[0],
+        y: mainPosition[1] + fontSize * (values.length + 1),
+      },
+      horizontalLine: {
+        x1: mainPosition[0],
+        x2: mainPosition[0],
+        y1: mainPosition[1],
+        y2: viewBox[3] + viewBox[1],
+      },
+      verticalLine: {
+        x1: viewBox[0],
+        x2: mainPosition[0],
+        y1: mainPosition[1],
+        y2: mainPosition[1],
+      },
+    };
+  }, [fontSize, formatter, pointerValues, transformer, values, viewBox]);
+
   const svgRef: Ref<Svg> | undefined = useCallback(
     (ref: Svg) => {
       svgElement.current =
@@ -216,6 +311,7 @@ export function GraphContextProvider({
         viewBox,
         width,
         zeroVisible,
+        pointer,
         formatter,
         onMouseLeave,
         onPointerMove,
