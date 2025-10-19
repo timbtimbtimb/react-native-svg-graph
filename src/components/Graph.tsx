@@ -4,11 +4,12 @@ import {
   GraphContextProvider,
   type Color,
   type Formatter,
-} from './GraphContext';
+} from '../contexts/GraphContext';
 import Main from './Main';
 import Grids from './Grids';
 import Lines from './Lines';
 import Pointer from './Pointer';
+import { PointerContextProvider } from '../contexts/PointerContext';
 
 interface Props {
   formatter: Formatter;
@@ -38,13 +39,15 @@ export default function Graph({
       colors={colors}
       formatter={formatter}
     >
-      <Main>
-        <XAxis />
-        <YAxis />
-        <Grids />
-        <Lines />
-        <Pointer />
-      </Main>
+      <PointerContextProvider>
+        <Main>
+          <XAxis />
+          <YAxis />
+          <Grids />
+          <Lines />
+          <Pointer />
+        </Main>
+      </PointerContextProvider>
     </GraphContextProvider>
   );
 }

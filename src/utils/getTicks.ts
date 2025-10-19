@@ -7,7 +7,7 @@ import getReducedSteps from './getReducedSteps';
 import getRawLinesList from './getRawLinesList';
 import type { Transformer } from './getTransformer';
 import type { Line } from '../components/Grids';
-import type { Formatter } from '../components/GraphContext';
+import type { Formatter } from '../contexts/GraphContext';
 import type { ColorValue } from 'react-native';
 
 export interface Tick {

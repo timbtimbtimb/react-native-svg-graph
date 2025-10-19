@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import { Path } from 'react-native-svg';
 import svgCoords2SvgLineCoords from '../utils/svgCoords2SvgLineCoords';
-import { useGraphContext } from './GraphContext';
+import { useGraphContext } from '../contexts/GraphContext';
 
 export default function YAxis(): ReactElement {
   const { bounds, transformer } = useGraphContext();

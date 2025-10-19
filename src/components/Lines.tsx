@@ -1,5 +1,5 @@
 import { useId, useMemo } from 'react';
-import { useGraphContext, type Color } from './GraphContext';
+import { useGraphContext, type Color } from '../contexts/GraphContext';
 import {
   G,
   Path,
