@@ -99,29 +99,7 @@ export default function App() {
             stroke={'rgb(50,50,50)'}
             formatter={(v: number) => {
               const date = new Date(v);
-              return `${date.getHours().toString().padStart(2, '0')}h`;
-            }}
-          />
-          <Grid
-            axis={'x'}
-            position={'top'}
-            type={'days'}
-            strokeWidth={3}
-            stroke={'rgb(100,100,100)'}
-            formatter={(v: number) => {
-              const date = new Date(v);
-              return [
-                [
-                  'dimanche',
-                  'lundi',
-                  'mardi',
-                  'mercredi',
-                  'jeudi',
-                  'vendredi',
-                  'samedi',
-                ][date.getDay()],
-                date.getDate().toString(),
-              ].join(' ');
+              return `${date.getHours().toString()}h`;
             }}
           />
           <Lines
@@ -134,7 +112,7 @@ export default function App() {
           />
           <Pointer />
         </Graph>
-        <Text style={styles.graphTitle}>Altitude (m)</Text>
+        <Text style={styles.graphTitle}>Altitude (m) / Time (h)</Text>
       </View>
       <View>
         <Graph

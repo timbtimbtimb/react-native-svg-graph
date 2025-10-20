@@ -85,5 +85,15 @@ export default function useSourceData() {
     })();
   }, []);
 
-  return { temperatures, snowDepth, wind, station, sun, distance, time };
+  const timezoneOffset = new Date(0).getTimezoneOffset() * 60 * 1000;
+
+  return {
+    temperatures,
+    snowDepth,
+    wind,
+    station,
+    sun,
+    distance,
+    time: time.map(([t, v]) => [t + timezoneOffset, v]) as [number, number][],
+  };
 }
