@@ -3,12 +3,12 @@ import { Path } from 'react-native-svg';
 import svgCoords2SvgLineCoords from '../utils/svgCoords2SvgLineCoords';
 import { useGraphContext } from '../contexts/GraphContext';
 
-export default function XAxis(): ReactElement {
+export default function XAxis({ atZero }: { atZero?: boolean }): ReactElement {
   const { bounds, transformer } = useGraphContext();
 
   const xAxisData: [number, number][] = [
-    [bounds.minValueX, bounds.zeroVisibleMinValueY],
-    [bounds.maxValueX, bounds.zeroVisibleMinValueY],
+    [bounds.minValueX, atZero ? 0 : bounds.zeroVisibleMinValueY],
+    [bounds.maxValueX, atZero ? 0 : bounds.zeroVisibleMinValueY],
   ];
 
   const d = svgCoords2SvgLineCoords(xAxisData.map(transformer));

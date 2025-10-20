@@ -149,7 +149,7 @@ export default function App() {
             },
           ]}
         >
-          <XAxis />
+          <XAxis atZero />
           <YAxis />
           <Grid
             axis={'y'}
