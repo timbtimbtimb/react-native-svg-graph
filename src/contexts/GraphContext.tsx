@@ -119,7 +119,8 @@ export function GraphContextProvider({
   const margins = useMemo(
     () => ({
       marginVertical: scaleRatio * fontSize,
-      marginLeft: scaleRatio * fontSize * 5,
+      marginLeft: scaleRatio * fontSize * 4,
+      marginRight: scaleRatio * fontSize,
     }),
     [fontSize, scaleRatio]
   );

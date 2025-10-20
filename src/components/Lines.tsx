@@ -86,7 +86,7 @@ function Line({
       <Mask id={`positive-mask-${uniqueId}`}>
         <Polygon points={positiveMask} fill={'white'} />
       </Mask>
-      <Path d={line} stroke={positiveColor} strokeWidth={2} fill="none" />
+      <Path d={line} stroke={positiveColor} strokeWidth={3} fill="none" />
       <G mask={`url(#positive-mask-${uniqueId})`}>
         <Path
           d={positivePolygon}
@@ -94,7 +94,7 @@ function Line({
         />
       </G>
       <G mask={`url(#negative-mask-${uniqueId})`}>
-        <Path d={line} stroke={negativeColor} strokeWidth={2} fill="none" />
+        <Path d={line} stroke={negativeColor} strokeWidth={3} fill="none" />
         <Path
           d={negativePolygon}
           fill={`url(#negative-gradient-${uniqueId})`}

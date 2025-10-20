@@ -6,12 +6,13 @@ import YAxis from '../../src/components/YAxis';
 import Grid from '../../src/components/Grid';
 import Lines from '../../src/components/Lines';
 import Pointer from '../../src/components/Pointer';
+import { useWindowDimensions } from 'react-native';
 
 export default function App() {
   const { temperatures, wind, snowDepth, station, sun, distance, time } =
     useSourceData();
 
-  const width = 1500;
+  const { width } = useWindowDimensions();
   const height = 250;
 
   return (
@@ -79,7 +80,7 @@ export default function App() {
           height={height}
           zeroVisible={false}
           fontSize={15}
-          formatter={(v: number) => `${v}m`}
+          formatter={(v: number) => `${v} m`}
         >
           <XAxis />
           <YAxis />
@@ -136,32 +137,15 @@ export default function App() {
           <Grid
             axis={'x'}
             position={'bottom'}
-            type={'hours'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => {
-              const date = new Date(v);
-              return `${date.getHours().toString().padStart(2, '0')}h`;
-            }}
-          />
-          <Grid
-            axis={'x'}
-            position={'top'}
             type={'days'}
             strokeWidth={3}
             stroke={'rgb(100,100,100)'}
             formatter={(v: number) => {
               const date = new Date(v);
               return [
-                [
-                  'dimanche',
-                  'lundi',
-                  'mardi',
-                  'mercredi',
-                  'jeudi',
-                  'vendredi',
-                  'samedi',
-                ][date.getDay()],
+                ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'][
+                  date.getDay()
+                ],
                 date.getDate().toString(),
               ].join(' ');
             }}
@@ -200,32 +184,15 @@ export default function App() {
           <Grid
             axis={'x'}
             position={'bottom'}
-            type={'hours'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => {
-              const date = new Date(v);
-              return `${date.getHours().toString().padStart(2, '0')}h`;
-            }}
-          />
-          <Grid
-            axis={'x'}
-            position={'top'}
             type={'days'}
             strokeWidth={3}
             stroke={'rgb(100,100,100)'}
             formatter={(v: number) => {
               const date = new Date(v);
               return [
-                [
-                  'dimanche',
-                  'lundi',
-                  'mardi',
-                  'mercredi',
-                  'jeudi',
-                  'vendredi',
-                  'samedi',
-                ][date.getDay()],
+                ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'][
+                  date.getDay()
+                ],
                 date.getDate().toString(),
               ].join(' ');
             }}
@@ -244,7 +211,7 @@ export default function App() {
           />
           <Pointer />
         </Graph>
-        <Text style={styles.graphTitle}>Wind (°C)</Text>
+        <Text style={styles.graphTitle}>Wind (km/h)</Text>
       </View>
       <View>
         <Graph
@@ -268,32 +235,15 @@ export default function App() {
           <Grid
             axis={'x'}
             position={'bottom'}
-            type={'hours'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => {
-              const date = new Date(v);
-              return `${date.getHours().toString().padStart(2, '0')}h`;
-            }}
-          />
-          <Grid
-            axis={'x'}
-            position={'top'}
             type={'days'}
             strokeWidth={3}
             stroke={'rgb(100,100,100)'}
             formatter={(v: number) => {
               const date = new Date(v);
               return [
-                [
-                  'dimanche',
-                  'lundi',
-                  'mardi',
-                  'mercredi',
-                  'jeudi',
-                  'vendredi',
-                  'samedi',
-                ][date.getDay()],
+                ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'][
+                  date.getDay()
+                ],
                 date.getDate().toString(),
               ].join(' ');
             }}
@@ -319,23 +269,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(20,20,20)',
     overflow: 'scroll',
     width: '100%',
+    padding: 15,
   },
   title: {
     color: 'white',
     textAlign: 'center',
-    fontSize: 50,
+    fontSize: 30,
   },
   subtitle: {
     color: 'white',
     textAlign: 'center',
-    fontSize: 30,
+    fontSize: 15,
   },
   graphTitle: {
     color: 'gray',
     textAlign: 'center',
-    fontSize: 30,
+    fontSize: 15,
     fontWeight: 'bold',
     marginTop: 10,
-    marginBottom: 60,
+    marginBottom: 30,
   },
 });
