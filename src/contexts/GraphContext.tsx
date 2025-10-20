@@ -35,7 +35,6 @@ interface GraphContextType {
   fontSize: number;
   bounds: Bounds;
   values: [number, number][][];
-  colors: Color[];
   svgElement: React.RefObject<Svg | null>;
   margins: {
     marginVertical: number;
@@ -63,10 +62,6 @@ interface Props {
   fontSize: number;
   values: [number, number][][];
   zeroVisible: boolean;
-  colors: Array<{
-    positiveColor: ColorValue;
-    negativeColor: ColorValue;
-  }>;
   formatter: Formatter;
 }
 
@@ -91,7 +86,6 @@ export function GraphContextProvider({
   children,
   values,
   zeroVisible,
-  colors,
   formatter,
 }: Props): ReactElement {
   const svgElement = useRef<Svg>(null);
@@ -147,7 +141,6 @@ export function GraphContextProvider({
     <GraphContext.Provider
       value={{
         bounds,
-        colors,
         fontSize,
         gradients,
         height,

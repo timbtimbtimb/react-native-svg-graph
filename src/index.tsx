@@ -1,9 +1,5 @@
 import Graph from './components/Graph';
-import {
-  GraphContextProvider,
-  type Color,
-  type Formatter,
-} from './contexts/GraphContext';
+import { GraphContextProvider, type Formatter } from './contexts/GraphContext';
 import { PointerContextProvider } from './contexts/PointerContext';
 import type { ReactElement } from 'react';
 
@@ -13,7 +9,6 @@ interface Props {
   width: number;
   height: number;
   values: [number, number][][];
-  colors: Color[];
   zeroVisible: boolean;
   fontSize: number;
 }
@@ -24,7 +19,6 @@ export default function App({
   width,
   height,
   values,
-  colors,
   fontSize,
   zeroVisible,
 }: Props) {
@@ -35,7 +29,6 @@ export default function App({
       fontSize={fontSize}
       values={values}
       zeroVisible={zeroVisible}
-      colors={colors}
       formatter={formatter}
     >
       <PointerContextProvider>

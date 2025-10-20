@@ -41,12 +41,6 @@ export default function App() {
           zeroVisible={false}
           fontSize={15}
           formatter={(v: number) => `${v} m`}
-          colors={[
-            {
-              positiveColor: 'rgba(200, 200, 200, 1)',
-              negativeColor: 'rgba(200, 200, 200, 1)',
-            },
-          ]}
         >
           <XAxis />
           <YAxis />
@@ -66,7 +60,14 @@ export default function App() {
             stroke={'rgb(50,50,50)'}
             formatter={(v: number) => `${v} km`}
           />
-          <Lines />
+          <Lines
+            colors={[
+              {
+                positiveColor: 'rgba(200, 200, 200, 1)',
+                negativeColor: 'rgba(200, 200, 200, 1)',
+              },
+            ]}
+          />
           <Pointer />
         </Graph>
         <Text style={styles.graphTitle}>Altitude (m) / Distance (km)</Text>
@@ -79,12 +80,6 @@ export default function App() {
           zeroVisible={false}
           fontSize={15}
           formatter={(v: number) => `${v}m`}
-          colors={[
-            {
-              positiveColor: 'rgba(200, 200, 200, 1)',
-              negativeColor: 'rgba(200, 200, 200, 1)',
-            },
-          ]}
         >
           <XAxis />
           <YAxis />
@@ -129,7 +124,14 @@ export default function App() {
               ].join(' ');
             }}
           />
-          <Lines />
+          <Lines
+            colors={[
+              {
+                positiveColor: 'rgba(200, 200, 200, 1)',
+                negativeColor: 'rgba(200, 200, 200, 1)',
+              },
+            ]}
+          />
           <Pointer />
         </Graph>
         <Text style={styles.graphTitle}>Altitude (m)</Text>
@@ -142,12 +144,6 @@ export default function App() {
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v}°`}
-          colors={[
-            {
-              positiveColor: 'rgba(255, 123, 0, 1)',
-              negativeColor: 'rgba(0, 102, 255, 1)',
-            },
-          ]}
         >
           <XAxis atZero />
           <YAxis />
@@ -192,7 +188,14 @@ export default function App() {
               ].join(' ');
             }}
           />
-          <Lines />
+          <Lines
+            colors={[
+              {
+                positiveColor: 'rgba(255, 123, 0, 1)',
+                negativeColor: 'rgba(0, 102, 255, 1)',
+              },
+            ]}
+          />
           <Pointer />
         </Graph>
         <Text style={styles.graphTitle}>Temperatures (°C)</Text>
@@ -205,16 +208,6 @@ export default function App() {
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v} km/h`}
-          colors={[
-            {
-              positiveColor: 'rgba(200, 200, 200, 1)',
-              negativeColor: 'rgba(200, 200, 200, 1)',
-            },
-            {
-              positiveColor: 'rgba(200, 200, 200, 0.33)',
-              negativeColor: 'rgba(200, 200, 200, 0.33)',
-            },
-          ]}
         >
           <XAxis />
           <YAxis />
@@ -259,7 +252,18 @@ export default function App() {
               ].join(' ');
             }}
           />
-          <Lines />
+          <Lines
+            colors={[
+              {
+                positiveColor: 'rgba(200, 200, 200, 1)',
+                negativeColor: 'rgba(200, 200, 200, 1)',
+              },
+              {
+                positiveColor: 'rgba(200, 200, 200, 0.33)',
+                negativeColor: 'rgba(200, 200, 200, 0.33)',
+              },
+            ]}
+          />
           <Pointer />
         </Graph>
         <Text style={styles.graphTitle}>Wind (°C)</Text>
@@ -272,12 +276,6 @@ export default function App() {
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v} cm`}
-          colors={[
-            {
-              positiveColor: 'rgba(0, 102, 255, 1)',
-              negativeColor: 'rgba(0, 102, 255, 1)',
-            },
-          ]}
         >
           <XAxis />
           <YAxis />
@@ -322,7 +320,14 @@ export default function App() {
               ].join(' ');
             }}
           />
-          <Lines />
+          <Lines
+            colors={[
+              {
+                positiveColor: 'rgba(0, 102, 255, 1)',
+                negativeColor: 'rgba(0, 102, 255, 1)',
+              },
+            ]}
+          />
           <Pointer />
         </Graph>
         <Text style={styles.graphTitle}>Snow (cm)</Text>
@@ -353,5 +358,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     marginTop: 10,
+    marginBottom: 60,
   },
 });

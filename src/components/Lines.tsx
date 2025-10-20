@@ -10,8 +10,8 @@ import {
   Stop,
 } from 'react-native-svg';
 
-export default function Lines() {
-  const { colors, masks, lines, gradients } = useGraphContext();
+export default function Lines({ colors }: { colors: Color[] }) {
+  const { masks, lines, gradients } = useGraphContext();
   const uniqueId = useId();
 
   const linesElements = useMemo(
