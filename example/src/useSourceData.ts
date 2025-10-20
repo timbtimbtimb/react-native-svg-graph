@@ -1,5 +1,7 @@
 import SunCalc, { type GetTimesResult } from 'suncalc';
 import { useEffect, useState } from 'react';
+import distance from './distance';
+import time from './time';
 
 const HOST = 'https://api.snowmap.fr';
 // const HOST = 'http://localhost:8080';
@@ -83,5 +85,5 @@ export default function useSourceData() {
     })();
   }, []);
 
-  return { temperatures, snowDepth, wind, station, sun };
+  return { temperatures, snowDepth, wind, station, sun, distance, time };
 }

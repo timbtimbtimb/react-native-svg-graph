@@ -100,8 +100,8 @@ export function GraphContextProvider({
   const [scaleRatio, setScaleRatio] = useState<number>(1);
 
   const bounds = useMemo<Bounds>(() => {
-    return getBounds(values.flat());
-  }, [values]);
+    return getBounds(values.flat(), zeroVisible);
+  }, [values, zeroVisible]);
 
   const viewBox = useMemo(() => getViewBox(width, height), [width, height]);
 

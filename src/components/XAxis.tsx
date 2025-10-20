@@ -7,8 +7,8 @@ export default function XAxis(): ReactElement {
   const { bounds, transformer } = useGraphContext();
 
   const xAxisData: [number, number][] = [
-    [bounds.minValueX, 0],
-    [bounds.maxValueX, 0],
+    [bounds.minValueX, bounds.zeroVisibleMinValueY],
+    [bounds.maxValueX, bounds.zeroVisibleMinValueY],
   ];
 
   const d = svgCoords2SvgLineCoords(xAxisData.map(transformer));

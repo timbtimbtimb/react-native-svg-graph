@@ -1,6 +1,9 @@
 export type Bounds = ReturnType<typeof getBounds>;
 
-export default function getBounds(values: [number, number][]) {
+export default function getBounds(
+  values: [number, number][],
+  zeroVisible: boolean
+) {
   if (values.length === 0) {
     return {
       minValueX: 0,
@@ -25,7 +28,7 @@ export default function getBounds(values: [number, number][]) {
     maxValueX,
     minValueY,
     maxValueY,
-    zeroVisibleMinValueY,
-    zeroVisibleMaxValueY,
+    zeroVisibleMinValueY: zeroVisible ? zeroVisibleMinValueY : minValueY,
+    zeroVisibleMaxValueY: zeroVisible ? zeroVisibleMaxValueY : maxValueY,
   };
 }

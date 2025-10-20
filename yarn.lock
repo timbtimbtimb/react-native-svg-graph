@@ -3528,6 +3528,7 @@ __metadata:
   resolution: "@snowmap/react-native-svg-graph-example@workspace:example"
   dependencies:
     "@expo/metro-runtime": ~6.1.2
+    "@types/suncalc": ^1.9.2
     expo: ~54.0.12
     expo-status-bar: ~3.0.8
     react: 19.1.0
@@ -3536,6 +3537,7 @@ __metadata:
     react-native-builder-bob: ^0.40.13
     react-native-monorepo-config: ^0.1.9
     react-native-web: ~0.21.0
+    suncalc: ^1.9.0
   languageName: unknown
   linkType: soft
 
@@ -3553,7 +3555,6 @@ __metadata:
     "@release-it/conventional-changelog": ^10.0.1
     "@types/jest": ^29.5.14
     "@types/react": ^19.1.12
-    "@types/suncalc": ^1.9.2
     commitlint: ^19.8.1
     del-cli: ^6.0.0
     eslint: ^9.35.0
@@ -3566,7 +3567,6 @@ __metadata:
     react-native-builder-bob: ^0.40.13
     react-native-svg: ^15.13.0
     release-it: ^19.0.4
-    suncalc: ^1.9.0
     typescript: ^5.9.2
   peerDependencies:
     react: "*"

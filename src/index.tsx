@@ -28,6 +28,7 @@ export default function App({
   values,
   colors,
   fontSize,
+  zeroVisible,
 }: Props) {
   return (
     <GraphContextProvider
@@ -35,7 +36,7 @@ export default function App({
       height={height}
       fontSize={fontSize}
       values={values}
-      zeroVisible={true}
+      zeroVisible={zeroVisible}
       colors={colors}
       formatter={formatter}
     >

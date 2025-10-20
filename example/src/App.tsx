@@ -3,7 +3,8 @@ import Graph from '../../src/index';
 import useSourceData from './useSourceData';
 
 export default function App() {
-  const { temperatures, wind, snowDepth, station, sun } = useSourceData();
+  const { temperatures, wind, snowDepth, station, sun, distance, time } =
+    useSourceData();
 
   const width = 1500;
   const height = 250;
@@ -27,6 +28,40 @@ export default function App() {
           )}
         </View>
       )}
+      <View>
+        <Graph
+          values={[distance]}
+          width={width}
+          height={height}
+          zeroVisible={false}
+          fontSize={15}
+          formatter={(v: number) => `${v}m`}
+          colors={[
+            {
+              positiveColor: 'rgba(200, 200, 200, 1)',
+              negativeColor: 'rgba(200, 200, 200, 1)',
+            },
+          ]}
+        />
+        <Text style={styles.graphTitle}>Températures (°C)</Text>
+      </View>
+      <View>
+        <Graph
+          values={[time]}
+          width={width}
+          height={height}
+          zeroVisible={false}
+          fontSize={15}
+          formatter={(v: number) => `${v}m`}
+          colors={[
+            {
+              positiveColor: 'rgba(200, 200, 200, 1)',
+              negativeColor: 'rgba(200, 200, 200, 1)',
+            },
+          ]}
+        />
+        <Text style={styles.graphTitle}>Températures (°C)</Text>
+      </View>
       <View>
         <Graph
           values={temperatures}
