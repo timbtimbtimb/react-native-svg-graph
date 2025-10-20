@@ -1,17 +1,14 @@
-import Grids from './components/Grids';
-import Lines from './components/Lines';
 import Graph from './components/Graph';
-import Pointer from './components/Pointer';
-import XAxis from './components/XAxis';
-import YAxis from './components/YAxis';
 import {
   GraphContextProvider,
   type Color,
   type Formatter,
 } from './contexts/GraphContext';
 import { PointerContextProvider } from './contexts/PointerContext';
+import type { ReactElement } from 'react';
 
 interface Props {
+  children: ReactElement[];
   formatter: Formatter;
   width: number;
   height: number;
@@ -22,6 +19,7 @@ interface Props {
 }
 
 export default function App({
+  children,
   formatter,
   width,
   height,
@@ -41,13 +39,7 @@ export default function App({
       formatter={formatter}
     >
       <PointerContextProvider>
-        <Graph>
-          <XAxis />
-          <YAxis />
-          <Grids />
-          <Lines />
-          <Pointer />
-        </Graph>
+        <Graph>{children}</Graph>
       </PointerContextProvider>
     </GraphContextProvider>
   );

@@ -1,4 +1,4 @@
-import type { Line } from '../components/Grids';
+import type { Line } from './getRawLinesList';
 
 export default function getAverageLinesDistance(
   lines: Line[],

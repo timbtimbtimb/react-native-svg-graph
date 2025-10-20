@@ -1,6 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Graph from '../../src/index';
 import useSourceData from './useSourceData';
+import XAxis from '../../src/components/XAxis';
+import YAxis from '../../src/components/YAxis';
+import Grid from '../../src/components/Grid';
+import Lines from '../../src/components/Lines';
+import Pointer from '../../src/components/Pointer';
 
 export default function App() {
   const { temperatures, wind, snowDepth, station, sun, distance, time } =
@@ -35,15 +40,36 @@ export default function App() {
           height={height}
           zeroVisible={false}
           fontSize={15}
-          formatter={(v: number) => `${v}m`}
+          formatter={(v: number) => `${v} m`}
           colors={[
             {
               positiveColor: 'rgba(200, 200, 200, 1)',
               negativeColor: 'rgba(200, 200, 200, 1)',
             },
           ]}
-        />
-        <Text style={styles.graphTitle}>Températures (°C)</Text>
+        >
+          <XAxis />
+          <YAxis />
+          <Grid
+            axis={'y'}
+            position={'top'}
+            type={'value'}
+            strokeWidth={1}
+            stroke={'rgb(50,50,50)'}
+            formatter={(v: number) => `${v} m`}
+          />
+          <Grid
+            axis={'x'}
+            type={'value'}
+            position={'bottom'}
+            strokeWidth={1}
+            stroke={'rgb(50,50,50)'}
+            formatter={(v: number) => `${v} km`}
+          />
+          <Lines />
+          <Pointer />
+        </Graph>
+        <Text style={styles.graphTitle}>Altitude (m) / Distance (km)</Text>
       </View>
       <View>
         <Graph
@@ -59,8 +85,54 @@ export default function App() {
               negativeColor: 'rgba(200, 200, 200, 1)',
             },
           ]}
-        />
-        <Text style={styles.graphTitle}>Températures (°C)</Text>
+        >
+          <XAxis />
+          <YAxis />
+          <Grid
+            axis={'y'}
+            position={'top'}
+            type={'value'}
+            strokeWidth={1}
+            stroke={'rgb(50,50,50)'}
+            formatter={(v: number) => `${v} m`}
+          />
+          <Grid
+            axis={'x'}
+            position={'bottom'}
+            type={'hours'}
+            strokeWidth={1}
+            stroke={'rgb(50,50,50)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return `${date.getHours().toString().padStart(2, '0')}h`;
+            }}
+          />
+          <Grid
+            axis={'x'}
+            position={'top'}
+            type={'days'}
+            strokeWidth={3}
+            stroke={'rgb(100,100,100)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return [
+                [
+                  'dimanche',
+                  'lundi',
+                  'mardi',
+                  'mercredi',
+                  'jeudi',
+                  'vendredi',
+                  'samedi',
+                ][date.getDay()],
+                date.getDate().toString(),
+              ].join(' ');
+            }}
+          />
+          <Lines />
+          <Pointer />
+        </Graph>
+        <Text style={styles.graphTitle}>Altitude (m)</Text>
       </View>
       <View>
         <Graph
@@ -76,8 +148,54 @@ export default function App() {
               negativeColor: 'rgba(0, 102, 255, 1)',
             },
           ]}
-        />
-        <Text style={styles.graphTitle}>Températures (°C)</Text>
+        >
+          <XAxis />
+          <YAxis />
+          <Grid
+            axis={'y'}
+            position={'top'}
+            type={'value'}
+            strokeWidth={1}
+            stroke={'rgb(50,50,50)'}
+            formatter={(v: number) => `${v}°`}
+          />
+          <Grid
+            axis={'x'}
+            position={'bottom'}
+            type={'hours'}
+            strokeWidth={1}
+            stroke={'rgb(50,50,50)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return `${date.getHours().toString().padStart(2, '0')}h`;
+            }}
+          />
+          <Grid
+            axis={'x'}
+            position={'top'}
+            type={'days'}
+            strokeWidth={3}
+            stroke={'rgb(100,100,100)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return [
+                [
+                  'dimanche',
+                  'lundi',
+                  'mardi',
+                  'mercredi',
+                  'jeudi',
+                  'vendredi',
+                  'samedi',
+                ][date.getDay()],
+                date.getDate().toString(),
+              ].join(' ');
+            }}
+          />
+          <Lines />
+          <Pointer />
+        </Graph>
+        <Text style={styles.graphTitle}>Temperatures (°C)</Text>
       </View>
       <View>
         <Graph
@@ -97,8 +215,54 @@ export default function App() {
               negativeColor: 'rgba(200, 200, 200, 0.33)',
             },
           ]}
-        />
-        <Text style={styles.graphTitle}>Vent et rafales (km/h)</Text>
+        >
+          <XAxis />
+          <YAxis />
+          <Grid
+            axis={'y'}
+            position={'top'}
+            type={'value'}
+            strokeWidth={1}
+            stroke={'rgb(50,50,50)'}
+            formatter={(v: number) => `${v} km/h`}
+          />
+          <Grid
+            axis={'x'}
+            position={'bottom'}
+            type={'hours'}
+            strokeWidth={1}
+            stroke={'rgb(50,50,50)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return `${date.getHours().toString().padStart(2, '0')}h`;
+            }}
+          />
+          <Grid
+            axis={'x'}
+            position={'top'}
+            type={'days'}
+            strokeWidth={3}
+            stroke={'rgb(100,100,100)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return [
+                [
+                  'dimanche',
+                  'lundi',
+                  'mardi',
+                  'mercredi',
+                  'jeudi',
+                  'vendredi',
+                  'samedi',
+                ][date.getDay()],
+                date.getDate().toString(),
+              ].join(' ');
+            }}
+          />
+          <Lines />
+          <Pointer />
+        </Graph>
+        <Text style={styles.graphTitle}>Wind (°C)</Text>
       </View>
       <View>
         <Graph
@@ -114,8 +278,54 @@ export default function App() {
               negativeColor: 'rgba(0, 102, 255, 1)',
             },
           ]}
-        />
-        <Text style={styles.graphTitle}>Neige (cm)</Text>
+        >
+          <XAxis />
+          <YAxis />
+          <Grid
+            axis={'y'}
+            position={'top'}
+            type={'value'}
+            strokeWidth={1}
+            stroke={'rgb(50,50,50)'}
+            formatter={(v: number) => `${v} cm`}
+          />
+          <Grid
+            axis={'x'}
+            position={'bottom'}
+            type={'hours'}
+            strokeWidth={1}
+            stroke={'rgb(50,50,50)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return `${date.getHours().toString().padStart(2, '0')}h`;
+            }}
+          />
+          <Grid
+            axis={'x'}
+            position={'top'}
+            type={'days'}
+            strokeWidth={3}
+            stroke={'rgb(100,100,100)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return [
+                [
+                  'dimanche',
+                  'lundi',
+                  'mardi',
+                  'mercredi',
+                  'jeudi',
+                  'vendredi',
+                  'samedi',
+                ][date.getDay()],
+                date.getDate().toString(),
+              ].join(' ');
+            }}
+          />
+          <Lines />
+          <Pointer />
+        </Graph>
+        <Text style={styles.graphTitle}>Snow (cm)</Text>
       </View>
     </View>
   );

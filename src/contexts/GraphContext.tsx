@@ -15,7 +15,6 @@ import getBounds, { type Bounds } from '../utils/getBounds';
 import getViewBox from '../utils/getViewBox';
 import type { Transformer } from '../utils/getTransformer';
 import getTransformer from '../utils/getTransformer';
-import getTicks, { type ParsedTick } from '../utils/getTicks';
 import type { ColorValue } from 'react-native';
 import svgCoords2SvgLineCoords from '../utils/svgCoords2SvgLineCoords';
 import getMasksSvgCoords from '../utils/getMasksSvgCoords';
@@ -43,7 +42,6 @@ interface GraphContextType {
     marginLeft: number;
   };
   zeroVisible: boolean;
-  ticks: ParsedTick[];
   lines: string[];
   svgRef: Ref<Svg> | undefined;
   masks: {
@@ -110,19 +108,6 @@ export function GraphContextProvider({
     [bounds, values, viewBox]
   );
 
-  const ticks = useMemo<ParsedTick[]>(
-    () =>
-      getTicks({
-        bounds,
-        formatter,
-        viewBox,
-        fontSize,
-        zeroVisible,
-        transformer,
-      }),
-    [bounds, fontSize, formatter, transformer, viewBox, zeroVisible]
-  );
-
   const lines = useMemo(
     () => values.map((v) => svgCoords2SvgLineCoords(v.map(transformer), true)),
     [transformer, values]
@@ -170,7 +155,6 @@ export function GraphContextProvider({
         masks,
         margins,
         scaleRatio,
-        ticks,
         viewBox,
         width,
         zeroVisible,

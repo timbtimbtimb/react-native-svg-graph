@@ -3,7 +3,7 @@ import type { Transformer } from './getTransformer';
 import type { ViewBox } from './getViewBox';
 import svgCoords2SvgLineCoords from './svgCoords2SvgLineCoords';
 
-type Line = {
+export type Line = {
   d: string;
   textX: number;
   textY: number;
