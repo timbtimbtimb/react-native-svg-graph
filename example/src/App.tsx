@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Graph from '../../src/index';
 import useSourceData from './useSourceData';
 import XAxis from '../../src/components/XAxis';
@@ -15,7 +15,7 @@ export default function App() {
   const { width } = useWindowDimensions();
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {station && (
         <View>
           <Text style={styles.title}>
@@ -50,7 +50,7 @@ export default function App() {
             type={'value'}
             strokeWidth={1}
             stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => `${v} m`}
+            formatter={(v: number) => `${v}`}
           />
           <Grid
             axis={'x'}
@@ -58,7 +58,7 @@ export default function App() {
             position={'bottom'}
             strokeWidth={1}
             stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => `${v} km`}
+            formatter={(v: number) => `${v}`}
           />
           <Lines
             colors={[
@@ -89,7 +89,7 @@ export default function App() {
             type={'value'}
             strokeWidth={1}
             stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => `${v} m`}
+            formatter={(v: number) => `${v}`}
           />
           <Grid
             axis={'x'}
@@ -170,7 +170,7 @@ export default function App() {
             type={'value'}
             strokeWidth={1}
             stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => `${v} km/h`}
+            formatter={(v: number) => `${v}`}
           />
           <Grid
             axis={'x'}
@@ -235,7 +235,7 @@ export default function App() {
         </Graph>
         <Text style={styles.graphTitle}>Snow (cm)</Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

@@ -29,6 +29,7 @@ export interface Color {
 
 interface GraphContextType {
   viewBox: ViewBox;
+  marginViewBox: ViewBox;
   scaleRatio: number;
   width: number;
   height: number;
@@ -36,10 +37,6 @@ interface GraphContextType {
   bounds: Bounds;
   values: [number, number][][];
   svgElement: React.RefObject<Svg | null>;
-  margins: {
-    marginVertical: number;
-    marginLeft: number;
-  };
   zeroVisible: boolean;
   lines: string[];
   svgRef: Ref<Svg> | undefined;
@@ -97,6 +94,16 @@ export function GraphContextProvider({
 
   const viewBox = useMemo(() => getViewBox(width, height), [width, height]);
 
+  const marginViewBox = useMemo<ViewBox>(
+    () => [
+      viewBox[0] - fontSize * 2.5,
+      viewBox[1] - fontSize,
+      viewBox[2] + fontSize * 4.5,
+      viewBox[3] + fontSize * 2,
+    ],
+    [fontSize, viewBox]
+  );
+
   const transformer = useMemo(
     () => getTransformer(values.flat(), viewBox, bounds),
     [bounds, values, viewBox]
@@ -115,15 +122,6 @@ export function GraphContextProvider({
   const gradients = useMemo(() => {
     return values.map((v) => getPolygonsSvgCoords(bounds, transformer, v));
   }, [bounds, transformer, values]);
-
-  const margins = useMemo(
-    () => ({
-      marginVertical: scaleRatio * fontSize,
-      marginLeft: scaleRatio * fontSize * 4,
-      marginRight: scaleRatio * fontSize,
-    }),
-    [fontSize, scaleRatio]
-  );
 
   const svgRef: Ref<Svg> | undefined = useCallback(
     (ref: Svg) => {
@@ -147,7 +145,7 @@ export function GraphContextProvider({
         height,
         lines,
         masks,
-        margins,
+        marginViewBox,
         scaleRatio,
         viewBox,
         width,

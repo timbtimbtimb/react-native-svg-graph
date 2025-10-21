@@ -7,11 +7,10 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react';
-import type { PointerEvent } from 'react-native';
 import { useGraphContext } from './GraphContext';
 
 interface PointerContextType {
-  onPointerMove: (event: PointerEvent) => void;
+  onPointerMove: (x: number) => void;
   onMouseLeave: () => void;
   pointer: {
     circles: {
@@ -73,10 +72,10 @@ export function PointerContextProvider({
     transformer,
     formatter,
     viewBox,
+    marginViewBox,
     svgElement,
     values,
     bounds,
-    width,
   } = useGraphContext();
 
   const [pointerValues, setPointerValues] = useState<[number, number][] | null>(
@@ -143,13 +142,15 @@ export function PointerContextProvider({
   }, [fontSize, formatter, pointerValues, transformer, values, viewBox]);
 
   const onPointerMove = useCallback(
-    (event: PointerEvent) => {
+    (x: number) => {
       const rect = (
         svgElement.current as null | HTMLElement
       )?.getBoundingClientRect();
       if (rect == null) return;
-      const xPosition = (event.nativeEvent.offsetX * width) / rect.width;
-      const xRatio = xPosition / width;
+
+      const offset = Math.abs(marginViewBox[0] / marginViewBox[2]);
+      const scale = marginViewBox[2] / viewBox[2];
+      const xRatio = (x / rect.width - offset) * scale;
       const clampedXRatio = Math.min(1, Math.max(0, xRatio));
       const xValue =
         clampedXRatio * (bounds.maxValueX - bounds.minValueX) +
@@ -159,7 +160,7 @@ export function PointerContextProvider({
         values.map((value) => {
           const indexUnder = Math.max(
             0,
-            value.findIndex(([x]) => x >= xValue) - 1
+            value.findIndex(([xV]) => xV >= xValue) - 1
           );
           const valueUnder = value[indexUnder] as [number, number];
           const valueOver = value[
@@ -171,7 +172,7 @@ export function PointerContextProvider({
         })
       );
     },
-    [bounds.maxValueX, bounds.minValueX, svgElement, values, width]
+    [bounds, marginViewBox, svgElement, values, viewBox]
   );
 
   const onMouseLeave = useCallback(() => {
