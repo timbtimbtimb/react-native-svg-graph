@@ -13,7 +13,6 @@ export default function App() {
     useSourceData();
 
   const { width } = useWindowDimensions();
-  const height = 250;
 
   return (
     <View style={styles.container}>
@@ -38,7 +37,7 @@ export default function App() {
         <Graph
           values={[distance]}
           width={width}
-          height={height}
+          height={250}
           zeroVisible={false}
           fontSize={15}
           formatter={(v: number) => `${v} m`}
@@ -77,7 +76,7 @@ export default function App() {
         <Graph
           values={[time]}
           width={width}
-          height={height}
+          height={250}
           zeroVisible={false}
           fontSize={15}
           formatter={(v: number) => `${v} m`}
@@ -119,7 +118,7 @@ export default function App() {
         <Graph
           values={temperatures}
           width={width}
-          height={height}
+          height={150}
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v}°`}
@@ -138,17 +137,9 @@ export default function App() {
             axis={'x'}
             position={'bottom'}
             type={'days'}
-            strokeWidth={3}
+            strokeWidth={1}
             stroke={'rgb(100,100,100)'}
-            formatter={(v: number) => {
-              const date = new Date(v);
-              return [
-                ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'][
-                  date.getDay()
-                ],
-                date.getDate().toString(),
-              ].join(' ');
-            }}
+            formatter={(v: number) => new Date(v).getDate().toString()}
           />
           <Lines
             colors={[
@@ -166,7 +157,7 @@ export default function App() {
         <Graph
           values={wind}
           width={width}
-          height={height}
+          height={150}
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v} km/h`}
@@ -185,17 +176,9 @@ export default function App() {
             axis={'x'}
             position={'bottom'}
             type={'days'}
-            strokeWidth={3}
+            strokeWidth={1}
             stroke={'rgb(100,100,100)'}
-            formatter={(v: number) => {
-              const date = new Date(v);
-              return [
-                ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'][
-                  date.getDay()
-                ],
-                date.getDate().toString(),
-              ].join(' ');
-            }}
+            formatter={(v: number) => new Date(v).getDate().toString()}
           />
           <Lines
             colors={[
@@ -217,7 +200,7 @@ export default function App() {
         <Graph
           values={snowDepth}
           width={width}
-          height={height}
+          height={150}
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v} cm`}
@@ -236,17 +219,9 @@ export default function App() {
             axis={'x'}
             position={'bottom'}
             type={'days'}
-            strokeWidth={3}
+            strokeWidth={1}
             stroke={'rgb(100,100,100)'}
-            formatter={(v: number) => {
-              const date = new Date(v);
-              return [
-                ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'][
-                  date.getDay()
-                ],
-                date.getDate().toString(),
-              ].join(' ');
-            }}
+            formatter={(v: number) => new Date(v).getDate().toString()}
           />
           <Lines
             colors={[
