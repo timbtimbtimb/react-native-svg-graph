@@ -8,6 +8,7 @@ import {
   type ReactElement,
   type ReactNode,
   type Ref,
+  type RefObject,
 } from 'react';
 import type { ViewBox } from '../utils/getViewBox';
 import type Svg from 'react-native-svg';
@@ -15,7 +16,7 @@ import getBounds, { type Bounds } from '../utils/getBounds';
 import getViewBox from '../utils/getViewBox';
 import type { Transformer } from '../utils/getTransformer';
 import getTransformer from '../utils/getTransformer';
-import type { ColorValue } from 'react-native';
+import { Platform, type ColorValue } from 'react-native';
 import svgCoords2SvgLineCoords from '../utils/svgCoords2SvgLineCoords';
 import getMasksSvgCoords from '../utils/getMasksSvgCoords';
 import getPolygonsSvgCoords from '../utils/getPolygonsSvgCoords';
@@ -36,7 +37,7 @@ interface GraphContextType {
   fontSize: number;
   bounds: Bounds;
   values: [number, number][][];
-  svgElement: React.RefObject<Svg | null>;
+  getSvgElementWidth: RefObject<() => number>;
   zeroVisible: boolean;
   lines: string[];
   svgRef: Ref<Svg> | undefined;
@@ -85,7 +86,7 @@ export function GraphContextProvider({
   zeroVisible,
   formatter,
 }: Props): ReactElement {
-  const svgElement = useRef<Svg>(null);
+  const getSvgElementWidth = useRef<() => number>(() => 1);
   const [scaleRatio, setScaleRatio] = useState<number>(1);
 
   const bounds = useMemo<Bounds>(() => {
@@ -125,13 +126,19 @@ export function GraphContextProvider({
 
   const svgRef: Ref<Svg> | undefined = useCallback(
     (ref: Svg) => {
-      svgElement.current =
-        (ref?.elementRef as null | { current: Svg })?.current ?? null;
-      const rect = (
-        svgElement.current as null | HTMLElement
-      )?.getBoundingClientRect();
-      if (rect == null) return;
-      setScaleRatio(rect.width / width);
+      if (Platform.OS === 'web') {
+        const svgElement =
+          (ref?.elementRef as null | { current: HTMLElement })?.current ?? null;
+        if (svgElement == null) return;
+        getSvgElementWidth.current = () =>
+          svgElement.getBoundingClientRect().width;
+        setScaleRatio(svgElement.getBoundingClientRect().width / width);
+      } else {
+        ref.measure((_, __, w) => {
+          setScaleRatio(w / width);
+          getSvgElementWidth.current = () => w;
+        });
+      }
     },
     [width]
   );
@@ -151,7 +158,7 @@ export function GraphContextProvider({
         width,
         zeroVisible,
         formatter,
-        svgElement,
+        getSvgElementWidth,
         svgRef,
         transformer,
         values,

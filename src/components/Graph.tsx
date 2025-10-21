@@ -1,20 +1,36 @@
 import Svg from 'react-native-svg';
 import { useGraphContext } from '../contexts/GraphContext';
-import { Platform, StyleSheet } from 'react-native';
-import { type ReactNode } from 'react';
+import { PanResponder, Platform, StyleSheet } from 'react-native';
+import { useRef, type ReactNode } from 'react';
 import { usePointerContext } from '../contexts/PointerContext';
 
 export default function Graph({ children }: { children: ReactNode }) {
   const { viewBox, marginViewBox, svgRef } = useGraphContext();
   const { onPointerMove, onMouseLeave } = usePointerContext();
 
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+      onPanResponderTerminationRequest: () => true,
+      onShouldBlockNativeResponder: () => true,
+      onPanResponderMove: (_, { moveX }) => {
+        onPointerMove(moveX);
+      },
+      onPanResponderRelease: () => {
+        onMouseLeave();
+      },
+    })
+  );
+
   return (
     <Svg
-      // {...(Platform.OS === 'web' ? {} : panResponder.current.panHandlers)}
+      {...(Platform.OS === 'web' ? {} : panResponder.current.panHandlers)}
       preserveAspectRatio="none slice"
       viewBox={marginViewBox.join(' ')}
       ref={svgRef}
-      onLayout={console.log}
       width={viewBox[2]}
       height={viewBox[3]}
       style={styles.svg}

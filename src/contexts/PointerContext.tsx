@@ -73,7 +73,7 @@ export function PointerContextProvider({
     formatter,
     viewBox,
     marginViewBox,
-    svgElement,
+    getSvgElementWidth,
     values,
     bounds,
   } = useGraphContext();
@@ -143,14 +143,11 @@ export function PointerContextProvider({
 
   const onPointerMove = useCallback(
     (x: number) => {
-      const rect = (
-        svgElement.current as null | HTMLElement
-      )?.getBoundingClientRect();
-      if (rect == null) return;
+      const rectWidth = getSvgElementWidth?.current();
 
       const offset = Math.abs(marginViewBox[0] / marginViewBox[2]);
       const scale = marginViewBox[2] / viewBox[2];
-      const xRatio = (x / rect.width - offset) * scale;
+      const xRatio = (x / rectWidth - offset) * scale;
       const clampedXRatio = Math.min(1, Math.max(0, xRatio));
       const xValue =
         clampedXRatio * (bounds.maxValueX - bounds.minValueX) +
@@ -172,7 +169,7 @@ export function PointerContextProvider({
         })
       );
     },
-    [bounds, marginViewBox, svgElement, values, viewBox]
+    [bounds, getSvgElementWidth, marginViewBox, values, viewBox]
   );
 
   const onMouseLeave = useCallback(() => {
