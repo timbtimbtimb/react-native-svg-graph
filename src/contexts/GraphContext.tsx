@@ -97,10 +97,10 @@ export function GraphContextProvider({
 
   const marginViewBox = useMemo<ViewBox>(
     () => [
-      viewBox[0] - fontSize * 2.5,
+      viewBox[0] - fontSize * 3,
       viewBox[1] - fontSize,
-      viewBox[2] + fontSize * 4.5,
-      viewBox[3] + fontSize * 2,
+      viewBox[2] + fontSize * 3,
+      viewBox[3] + fontSize * 2.5,
     ],
     [fontSize, viewBox]
   );
