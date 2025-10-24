@@ -44,11 +44,10 @@ export default function Pointer() {
     fontSize,
     viewBox,
     values,
-    width,
     transformer,
     formatter,
     marginViewBox,
-    getSvgElementWidth,
+    width,
   } = useGraphContext();
   const { pointerValue } = usePointerContext();
 
@@ -150,11 +149,10 @@ export default function Pointer() {
 
   const pointer = useMemo<Pointer | undefined>(() => {
     if (pointerValue == null) return;
-    const currentScale = width / getSvgElementWidth.current();
-    const xRatio =
-      (pointerValue * currentScale + marginViewBox[0]) * currentScale;
-    return findClosest(xRatio);
-  }, [findClosest, getSvgElementWidth, marginViewBox, pointerValue, width]);
+    const offsettedPosition =
+      pointerValue + marginViewBox[0] * (1 - pointerValue / width);
+    return findClosest(offsettedPosition);
+  }, [findClosest, marginViewBox, pointerValue, width]);
 
   const textsElements = useMemo(() => {
     if (pointer == null) return;

@@ -1,11 +1,22 @@
 import Svg from 'react-native-svg';
 import { useGraphContext } from '../contexts/GraphContext';
-import { PanResponder, Platform, StyleSheet } from 'react-native';
+import {
+  PanResponder,
+  Platform,
+  StyleSheet,
+  View,
+  type ViewProps,
+} from 'react-native';
 import { useRef, type ReactNode } from 'react';
 import { usePointerContext } from '../contexts/PointerContext';
 
-export default function Graph({ children }: { children: ReactNode }) {
-  const { viewBox, marginViewBox, svgRef } = useGraphContext();
+export default function Graph({
+  children,
+  ...props
+}: {
+  children: ReactNode;
+} & ViewProps) {
+  const { viewBox, marginViewBox, setWidth } = useGraphContext();
   const { onPointerMove, onMouseLeave } = usePointerContext();
 
   const panResponder = useRef(
@@ -26,23 +37,29 @@ export default function Graph({ children }: { children: ReactNode }) {
   );
 
   return (
-    <Svg
-      {...(Platform.OS === 'web' ? {} : panResponder.current.panHandlers)}
-      preserveAspectRatio="none slice"
-      viewBox={marginViewBox.join(' ')}
-      ref={svgRef}
-      width={viewBox[2]}
-      height={viewBox[3]}
-      style={styles.svg}
-      onMouseLeave={Platform.OS === 'web' ? onMouseLeave : undefined}
-      onPointerMove={
-        Platform.OS === 'web'
-          ? (event) => onPointerMove(event.nativeEvent.offsetX)
-          : undefined
-      }
+    <View
+      {...props}
+      onLayout={(event) => {
+        setWidth(event.nativeEvent.layout.width);
+      }}
     >
-      {children}
-    </Svg>
+      <Svg
+        {...(Platform.OS === 'web' ? {} : panResponder.current.panHandlers)}
+        preserveAspectRatio="none slice"
+        viewBox={marginViewBox.join(' ')}
+        width={viewBox[2]}
+        height={viewBox[3]}
+        style={styles.svg}
+        onMouseLeave={Platform.OS === 'web' ? onMouseLeave : undefined}
+        onPointerMove={
+          Platform.OS === 'web'
+            ? (event) => onPointerMove(event.nativeEvent.offsetX)
+            : undefined
+        }
+      >
+        {children}
+      </Svg>
+    </View>
   );
 }
 

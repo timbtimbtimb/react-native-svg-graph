@@ -118,7 +118,7 @@ export default function App() {
         <Graph
           values={temperatures}
           width={width}
-          height={150}
+          height={250}
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v}°`}
@@ -157,7 +157,7 @@ export default function App() {
         <Graph
           values={wind}
           width={width}
-          height={150}
+          height={250}
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v} km/h`}
@@ -200,7 +200,7 @@ export default function App() {
         <Graph
           values={snowDepth}
           width={width}
-          height={150}
+          height={250}
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v} cm`}

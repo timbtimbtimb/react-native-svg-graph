@@ -1,3 +1,4 @@
+import type { ViewProps } from 'react-native';
 import Graph from './components/Graph';
 import { GraphContextProvider, type Formatter } from './contexts/GraphContext';
 import { PointerContextProvider } from './contexts/PointerContext';
@@ -21,7 +22,8 @@ export default function App({
   values,
   fontSize,
   zeroVisible,
-}: Props) {
+  ...props
+}: Props & ViewProps) {
   return (
     <GraphContextProvider
       width={width}
@@ -32,7 +34,7 @@ export default function App({
       formatter={formatter}
     >
       <PointerContextProvider>
-        <Graph>{children}</Graph>
+        <Graph {...props}>{children}</Graph>
       </PointerContextProvider>
     </GraphContextProvider>
   );
