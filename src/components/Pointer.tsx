@@ -178,7 +178,7 @@ export default function Pointer() {
   const circlesElements = useMemo(() => {
     if (pointer == null) return;
     return pointer.circles.map(({ cx, cy }, i) => (
-      <Circle key={[i, cx, cy].join()} fill={'white'} r={3} cx={cx} cy={cy} />
+      <Circle key={i} fill={'white'} r={3} cx={cx} cy={cy} />
     ));
   }, [pointer]);
 
