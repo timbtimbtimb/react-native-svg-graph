@@ -39,6 +39,10 @@ export default function Container({
   return (
     <View
       {...props}
+      style={{
+        ...styles.container,
+        ...(props.style ?? {}),
+      }}
       onLayout={(event) => {
         setWidth(event.nativeEvent.layout.width);
       }}
@@ -64,6 +68,10 @@ export default function Container({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    backgroundColor: 'black',
+  },
   svg: {
     overflow: 'visible',
     width: 'auto',
