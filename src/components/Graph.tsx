@@ -1,72 +1,41 @@
-import Svg from 'react-native-svg';
-import { useGraphContext } from '../contexts/GraphContext';
-import {
-  PanResponder,
-  Platform,
-  StyleSheet,
-  View,
-  type ViewProps,
-} from 'react-native';
-import { useRef, type ReactNode } from 'react';
-import { usePointerContext } from '../contexts/PointerContext';
+import type { ViewProps } from 'react-native';
+import Container from './Container';
+import { GraphContextProvider, type Formatter } from '../contexts/GraphContext';
+import { PointerContextProvider } from '../contexts/PointerContext';
+import type { ReactElement } from 'react';
+
+interface Props {
+  children: ReactElement[];
+  formatter: Formatter;
+  width: number;
+  height: number;
+  values: [number, number][][];
+  zeroVisible: boolean;
+  fontSize: number;
+}
 
 export default function Graph({
   children,
+  formatter,
+  width,
+  height,
+  values,
+  fontSize,
+  zeroVisible,
   ...props
-}: {
-  children: ReactNode;
-} & ViewProps) {
-  const { viewBox, marginViewBox, setWidth } = useGraphContext();
-  const { onPointerMove, onMouseLeave } = usePointerContext();
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponderCapture: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponderCapture: () => true,
-      onPanResponderTerminationRequest: () => true,
-      onShouldBlockNativeResponder: () => true,
-      onPanResponderMove: (_, { moveX }) => {
-        onPointerMove(moveX);
-      },
-      onPanResponderRelease: () => {
-        onMouseLeave();
-      },
-    })
-  );
-
+}: Props & ViewProps): ReactElement {
   return (
-    <View
-      {...props}
-      onLayout={(event) => {
-        setWidth(event.nativeEvent.layout.width);
-      }}
+    <GraphContextProvider
+      width={width}
+      height={height}
+      fontSize={fontSize}
+      values={values}
+      zeroVisible={zeroVisible}
+      formatter={formatter}
     >
-      <Svg
-        {...(Platform.OS === 'web' ? {} : panResponder.current.panHandlers)}
-        preserveAspectRatio="none slice"
-        viewBox={marginViewBox.join(' ')}
-        width={viewBox[2]}
-        height={viewBox[3]}
-        style={styles.svg}
-        onMouseLeave={Platform.OS === 'web' ? onMouseLeave : undefined}
-        onPointerMove={
-          Platform.OS === 'web'
-            ? (event) => onPointerMove(event.nativeEvent.offsetX)
-            : undefined
-        }
-      >
-        {children}
-      </Svg>
-    </View>
+      <PointerContextProvider>
+        <Container {...props}>{children}</Container>
+      </PointerContextProvider>
+    </GraphContextProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  svg: {
-    overflow: 'visible',
-    width: 'auto',
-    height: 'auto',
-  },
-});

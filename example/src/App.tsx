@@ -1,11 +1,13 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import Graph from '../../src/index';
+import {
+  Graph,
+  XAxis,
+  YAxis,
+  Grid,
+  Lines,
+  Pointer,
+} from '@snowmap/react-native-svg-graph';
 import useSourceData from './useSourceData';
-import XAxis from '../../src/components/XAxis';
-import YAxis from '../../src/components/YAxis';
-import Grid from '../../src/components/Grid';
-import Lines from '../../src/components/Lines';
-import Pointer from '../../src/components/Pointer';
 import { useWindowDimensions } from 'react-native';
 
 export default function App() {
