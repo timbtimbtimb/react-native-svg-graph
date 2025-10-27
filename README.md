@@ -1,4 +1,4 @@
-# @snowmap/react-native-svg-graph
+# @snowmap.fr/react-native-svg-graph
 
 Simple yet beautiful SVG line graph
 
@@ -6,7 +6,7 @@ Simple yet beautiful SVG line graph
 
 
 ```sh
-npm install @snowmap/react-native-svg-graph
+npm install @snowmap.fr/react-native-svg-graph
 ```
 
 
@@ -22,7 +22,7 @@ import {
   Grid,
   Lines,
   Pointer,
-} from '@snowmap/react-native-svg-graph';
+} from '@snowmap.fr/react-native-svg-graph';
 import { useWindowDimensions } from 'react-native';
 
 export default function App() {

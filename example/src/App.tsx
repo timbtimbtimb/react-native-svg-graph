@@ -6,7 +6,7 @@ import {
   Grid,
   Lines,
   Pointer,
-} from '@snowmap/react-native-svg-graph';
+} from '@snowmap.fr/react-native-svg-graph';
 import useSourceData from './useSourceData';
 import { useWindowDimensions } from 'react-native';
 

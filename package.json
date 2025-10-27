@@ -1,5 +1,5 @@
 {
-  "name": "@snowmap/react-native-svg-graph",
+  "name": "@snowmap.fr/react-native-svg-graph",
   "version": "0.1.0",
   "description": "Simple yet beautiful SVG line graph",
   "main": "./lib/module/index.js",
@@ -32,7 +32,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace @snowmap/react-native-svg-graph-example",
+    "example": "yarn workspace @snowmap.fr/react-native-svg-graph-example",
     "test": "jest",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",

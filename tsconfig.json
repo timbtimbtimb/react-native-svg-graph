@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "@snowmap/react-native-svg-graph": ["./src/index"]
+      "@snowmap.fr/react-native-svg-graph": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
