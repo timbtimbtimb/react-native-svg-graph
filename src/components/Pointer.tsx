@@ -9,7 +9,7 @@ interface Pointer {
     cx: number;
     cy: number;
   }[];
-  texts: {
+  yAxisTexts: {
     t: string;
     x: number;
     y: number;
@@ -39,7 +39,11 @@ interface Pointer {
   };
 }
 
-export default function Pointer() {
+export default function Pointer({
+  xAxisTextFormatter,
+}: {
+  xAxisTextFormatter: (v: number) => string;
+}) {
   const {
     fontSize,
     viewBox,
@@ -56,18 +60,13 @@ export default function Pointer() {
       const pointerValues = [v];
 
       const positions = pointerValues.map(transformer);
-      const timestamp = Math.round(pointerValues[0]?.[0] ?? 0);
-      const date = new Date(timestamp);
-      const dateText =
-        date.getHours().toString().padStart(2, '0') +
-        ':' +
-        date.getMinutes().toString().padStart(2, '0');
+      const xAxisText = xAxisTextFormatter(pointerValues[0]?.[0] ?? 0);
       const w = fontSize * 5;
       const mainPosition = positions.sort((a, b) => b[1] - a[1]).at(0) ?? [
         0, 0,
       ];
 
-      const texts = values
+      const yAxisTexts = values
         .map((k) => {
           return k[j]?.[1] ?? 0;
         })
@@ -99,10 +98,10 @@ export default function Pointer() {
       return {
         x: positions[0]?.[0] ?? 0,
         circles,
-        texts,
+        yAxisTexts,
         rect,
         dateText: {
-          t: dateText,
+          t: xAxisText,
           x: mainPosition[0],
           y: mainPosition[1] + fontSize * (values.length + 1),
         },
@@ -120,7 +119,7 @@ export default function Pointer() {
         },
       };
     });
-  }, [fontSize, formatter, transformer, values, viewBox]);
+  }, [fontSize, formatter, transformer, values, viewBox, xAxisTextFormatter]);
 
   const findClosest = useCallback(
     (value: number) => {
@@ -156,7 +155,7 @@ export default function Pointer() {
 
   const textsElements = useMemo(() => {
     if (pointer == null) return;
-    return pointer.texts.map(({ t, x, y }, i) => {
+    return pointer.yAxisTexts.map(({ t, x, y }, i) => {
       return (
         <Text
           key={i}

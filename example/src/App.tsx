@@ -16,6 +16,16 @@ export default function App() {
 
   const { width } = useWindowDimensions();
 
+  const xAxisTextFormatter = (v: number) => {
+    const timestamp = Math.round(v);
+    const date = new Date(timestamp);
+    return (
+      date.getHours().toString().padStart(2, '0') +
+      ':' +
+      date.getMinutes().toString().padStart(2, '0')
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       {station && (
@@ -43,6 +53,8 @@ export default function App() {
           zeroVisible={false}
           fontSize={15}
           formatter={(v: number) => `${v} m`}
+          style={styles.graph}
+          smooth={false}
         >
           <XAxis />
           <YAxis />
@@ -70,7 +82,7 @@ export default function App() {
               },
             ]}
           />
-          <Pointer />
+          <Pointer xAxisTextFormatter={(v: number) => `${v.toFixed(2)} km`} />
         </Graph>
         <Text style={styles.graphTitle}>Altitude (m) / Distance (km)</Text>
       </View>
@@ -82,6 +94,8 @@ export default function App() {
           zeroVisible={false}
           fontSize={15}
           formatter={(v: number) => `${v} m`}
+          style={styles.graph}
+          smooth={false}
         >
           <XAxis />
           <YAxis />
@@ -112,7 +126,7 @@ export default function App() {
               },
             ]}
           />
-          <Pointer />
+          <Pointer xAxisTextFormatter={xAxisTextFormatter} />
         </Graph>
         <Text style={styles.graphTitle}>Altitude (m) / Time (h)</Text>
       </View>
@@ -124,6 +138,7 @@ export default function App() {
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v}°`}
+          style={styles.graph}
         >
           <XAxis atZero />
           <YAxis />
@@ -151,7 +166,7 @@ export default function App() {
               },
             ]}
           />
-          <Pointer />
+          <Pointer xAxisTextFormatter={xAxisTextFormatter} />
         </Graph>
         <Text style={styles.graphTitle}>Temperatures (°C)</Text>
       </View>
@@ -163,6 +178,7 @@ export default function App() {
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v} km/h`}
+          style={styles.graph}
         >
           <XAxis />
           <YAxis />
@@ -194,7 +210,7 @@ export default function App() {
               },
             ]}
           />
-          <Pointer />
+          <Pointer xAxisTextFormatter={xAxisTextFormatter} />
         </Graph>
         <Text style={styles.graphTitle}>Wind (km/h)</Text>
       </View>
@@ -206,6 +222,7 @@ export default function App() {
           zeroVisible={true}
           fontSize={15}
           formatter={(v: number) => `${v} cm`}
+          style={styles.graph}
         >
           <XAxis />
           <YAxis />
@@ -233,7 +250,7 @@ export default function App() {
               },
             ]}
           />
-          <Pointer />
+          <Pointer xAxisTextFormatter={xAxisTextFormatter} />
         </Graph>
         <Text style={styles.graphTitle}>Snow (cm)</Text>
       </View>
@@ -247,6 +264,9 @@ const styles = StyleSheet.create({
     overflow: 'scroll',
     width: '100%',
     padding: 15,
+  },
+  graph: {
+    backgroundColor: 'rgba(0,0,0,0)',
   },
   title: {
     color: 'white',
