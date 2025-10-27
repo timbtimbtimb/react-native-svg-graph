@@ -55,6 +55,7 @@ interface Props {
   fontSize: number;
   values: [number, number][][];
   zeroVisible: boolean;
+  smooth: boolean;
   formatter: Formatter;
 }
 
@@ -78,6 +79,7 @@ export function GraphContextProvider({
   children,
   values,
   zeroVisible,
+  smooth,
   formatter,
 }: Props): ReactElement {
   const [width, setWidth] = useState<number>(1);
@@ -104,8 +106,9 @@ export function GraphContextProvider({
   );
 
   const lines = useMemo(
-    () => values.map((v) => svgCoords2SvgLineCoords(v.map(transformer), true)),
-    [transformer, values]
+    () =>
+      values.map((v) => svgCoords2SvgLineCoords(v.map(transformer), smooth)),
+    [smooth, transformer, values]
   );
 
   const masks = useMemo(
@@ -114,8 +117,10 @@ export function GraphContextProvider({
   );
 
   const gradients = useMemo(() => {
-    return values.map((v) => getPolygonsSvgCoords(bounds, transformer, v));
-  }, [bounds, transformer, values]);
+    return values.map((v) =>
+      getPolygonsSvgCoords(bounds, transformer, v, smooth)
+    );
+  }, [bounds, smooth, transformer, values]);
 
   return (
     <GraphContext.Provider

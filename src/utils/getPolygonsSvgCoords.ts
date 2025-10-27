@@ -5,7 +5,8 @@ import svgCoords2SvgLineCoords from './svgCoords2SvgLineCoords';
 export default function getPolygonsSvgCoords(
   bounds: Bounds,
   transformer: Transformer,
-  values: [number, number][]
+  values: [number, number][],
+  smooth: boolean
 ) {
   const base = values.map(transformer);
 
@@ -31,12 +32,12 @@ export default function getPolygonsSvgCoords(
 
   const positivePolygon = svgCoords2SvgLineCoords(
     [...base, ...positivePart],
-    true
+    smooth
   );
 
   const negativePolygon = svgCoords2SvgLineCoords(
     [...base, ...negativePart],
-    true
+    smooth
   );
 
   return { positivePolygon, negativePolygon };
