@@ -10,6 +10,20 @@ import {
 import useSourceData from './useSourceData';
 import { useWindowDimensions } from 'react-native';
 
+const months = [
+  'jan.',
+  'feb.',
+  'mar.',
+  'apr.',
+  'may.',
+  'jun.',
+  'jul.',
+  'aug.',
+  'sep.',
+  'nov.',
+  'dec.',
+];
+
 export default function App() {
   const { temperatures, wind, snowDepth, station, sun, distance, time } =
     useSourceData();
@@ -31,7 +45,7 @@ export default function App() {
       {station && (
         <View>
           <Text style={styles.title}>
-            {`${station?.properties.name} (${station?.properties.elevation} m) - [${station?.properties.id}]`}
+            {`${station?.properties.name} (${station?.properties.elevation} m) - [${station?.properties.name}]`}
           </Text>
           <Text style={styles.subtitle}>{station?.properties.region}</Text>
           {sun && (
@@ -153,10 +167,25 @@ export default function App() {
           <Grid
             axis={'x'}
             position={'bottom'}
+            type={'weeks'}
+            strokeWidth={2}
+            stroke={'rgb(100,100,100)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return [
+                date.getDate().toString(),
+                months[date.getMonth() - 1],
+              ].join(' ');
+            }}
+          />
+          <Grid
+            axis={'x'}
+            position={'bottom'}
             type={'days'}
             strokeWidth={1}
-            stroke={'rgb(100,100,100)'}
-            formatter={(v: number) => new Date(v).getDate().toString()}
+            stroke={'rgb(50,50,50)'}
+            formatter={() => ''}
+            reduce={false}
           />
           <Lines
             colors={[
@@ -193,10 +222,25 @@ export default function App() {
           <Grid
             axis={'x'}
             position={'bottom'}
+            type={'weeks'}
+            strokeWidth={2}
+            stroke={'rgb(100,100,100)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return [
+                date.getDate().toString(),
+                months[date.getMonth() - 1],
+              ].join(' ');
+            }}
+          />
+          <Grid
+            axis={'x'}
+            position={'bottom'}
             type={'days'}
             strokeWidth={1}
-            stroke={'rgb(100,100,100)'}
-            formatter={(v: number) => new Date(v).getDate().toString()}
+            stroke={'rgb(50,50,50)'}
+            formatter={() => ''}
+            reduce={false}
           />
           <Lines
             colors={[
@@ -237,10 +281,25 @@ export default function App() {
           <Grid
             axis={'x'}
             position={'bottom'}
+            type={'weeks'}
+            strokeWidth={2}
+            stroke={'rgb(100,100,100)'}
+            formatter={(v: number) => {
+              const date = new Date(v);
+              return [
+                date.getDate().toString(),
+                months[date.getMonth() - 1],
+              ].join(' ');
+            }}
+          />
+          <Grid
+            axis={'x'}
+            position={'bottom'}
             type={'days'}
             strokeWidth={1}
-            stroke={'rgb(100,100,100)'}
-            formatter={(v: number) => new Date(v).getDate().toString()}
+            stroke={'rgb(50,50,50)'}
+            formatter={() => ''}
+            reduce={false}
           />
           <Lines
             colors={[

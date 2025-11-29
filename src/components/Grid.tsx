@@ -7,10 +7,11 @@ import type { ColorValue } from 'react-native';
 export interface Props {
   axis: 'x' | 'y';
   position: 'top' | 'bottom';
-  type: 'value' | 'days' | 'hours';
+  type: 'value' | 'days' | 'hours' | 'weeks';
   strokeWidth?: number;
   stroke?: ColorValue;
   formatter: Formatter;
+  reduce?: boolean;
 }
 
 export default function Grid({
@@ -20,6 +21,7 @@ export default function Grid({
   strokeWidth,
   stroke,
   formatter,
+  reduce,
 }: Props): ReactElement[] {
   const { bounds, viewBox, fontSize, zeroVisible, transformer } =
     useGraphContext();
@@ -31,7 +33,8 @@ export default function Grid({
       fontSize,
       zeroVisible,
       bounds,
-      transformer
+      transformer,
+      reduce
     );
   }, [
     axis,
@@ -45,6 +48,7 @@ export default function Grid({
     type,
     viewBox,
     zeroVisible,
+    reduce,
   ]);
 
   return useMemo(() => {

@@ -7,7 +7,6 @@ const HOST = 'https://api.snowmap.fr';
 // const HOST = 'http://localhost:8080';
 
 export interface WeatherStationData {
-  id: string;
   name: string;
   region: string;
   elevation: number;
@@ -43,9 +42,9 @@ export default function useSourceData() {
       const { features }: { features: WeatherStation[] } = await r.json();
       const randomIndex = Math.floor(Math.random() * features.length);
       const n = features[randomIndex] as WeatherStation;
-      const { id } = n.properties;
+      const { name } = n.properties;
 
-      const response = await fetch(`${HOST}/v3/weatherStations/${id}`);
+      const response = await fetch(`${HOST}/v3/weatherStations/${name}`);
       const data: WeatherStation = await response.json();
 
       setStation(data);

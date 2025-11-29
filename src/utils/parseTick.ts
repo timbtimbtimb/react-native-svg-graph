@@ -25,7 +25,8 @@ export default function parseTick(
   fontSize: number,
   zeroVisible: boolean,
   bounds: Bounds,
-  transformer: Transformer
+  transformer: Transformer,
+  reduce: boolean = true
 ): ParsedTick | null {
   const alignmentBaseline: AlignmentBaseline | undefined =
     axis === 'x' && position === 'bottom' ? 'before-edge' : undefined;
@@ -55,7 +56,7 @@ export default function parseTick(
 
   const targetDistance = axis === 'y' ? fontSize * 1.25 : fontSize * 2;
 
-  const reduceBy = averageLinesDistance / targetDistance;
+  const reduceBy = reduce === false ? 1 : averageLinesDistance / targetDistance;
 
   const lines =
     reduceBy >= 1

@@ -3,7 +3,7 @@ import getRoundDatesBetween from './getRoundDatesBetween';
 export default function getTimeTicks(
   from: Date,
   to: Date,
-  step: 'days' | 'hours'
+  step: 'days' | 'hours' | 'weeks'
 ): [number, number][] {
   return getRoundDatesBetween(new Date(from), new Date(to), step).map(
     (date) => {
