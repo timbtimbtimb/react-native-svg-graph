@@ -3,42 +3,6 @@ import { useGraphContext } from '../contexts/GraphContext';
 import { useCallback, useMemo } from 'react';
 import { usePointerContext } from '../contexts/PointerContext';
 
-interface Pointer {
-  x: number;
-  circles: {
-    cx: number;
-    cy: number;
-  }[];
-  yAxisTexts: {
-    t: string;
-    x: number;
-    y: number;
-  }[];
-  rect: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  dateText: {
-    t: string;
-    x: number;
-    y: number;
-  };
-  horizontalLine: {
-    x1: number;
-    x2: number;
-    y1: number;
-    y2: number;
-  };
-  verticalLine: {
-    x1: number;
-    x2: number;
-    y1: number;
-    y2: number;
-  };
-}
-
 export default function Pointer({
   xAxisTextFormatter,
 }: {
@@ -53,81 +17,43 @@ export default function Pointer({
     marginViewBox,
     width,
   } = useGraphContext();
+
   const { pointerValue } = usePointerContext();
 
   const cachedData = useMemo(() => {
     return (values[0] ?? []).map((v, j) => {
-      const pointerValues = [v];
+      const positions = [v].map(transformer);
+      const main = positions[0] ?? [0, 0];
+      const xAxisText = xAxisTextFormatter(v?.[0] ?? 0);
 
-      const positions = pointerValues.map(transformer);
-      const xAxisText = xAxisTextFormatter(pointerValues[0]?.[0] ?? 0);
-      const w = fontSize * 5;
-      const mainPosition = positions.sort((a, b) => b[1] - a[1]).at(0) ?? [
-        0, 0,
-      ];
+      const circles = values.map((val) => {
+        const p = transformer(val[j] ?? [0, 0]);
+        return { cx: p[0], cy: p[1] };
+      });
 
       const yAxisTexts = values
-        .map((k) => {
-          return k[j]?.[1] ?? 0;
-        })
+        .map((k) => k[j]?.[1] ?? 0)
         .sort((a, b) => b - a)
-        .map((val, i) => {
-          const roundedVal = Math.round(val);
-          const t = formatter ? formatter(roundedVal) : v.toString();
-          return {
-            t,
-            x: mainPosition[0],
-            y: mainPosition[1] + fontSize * (i + 1),
-          };
-        });
-
-      const circles = values
-        .map((val) => transformer(val[j] ?? [0, 0]))
-        .map((position) => ({
-          cx: position[0],
-          cy: position[1],
-        }));
-
-      const rect = {
-        x: mainPosition[0] - w / 2,
-        y: mainPosition[1] + fontSize * 0.66,
-        width: w,
-        height: fontSize * (values.length + 1.5),
-      };
+        .map((val) => (formatter ? formatter(Math.round(val)) : String(val)));
 
       return {
         x: positions[0]?.[0] ?? 0,
         circles,
         yAxisTexts,
-        rect,
-        dateText: {
-          t: xAxisText,
-          x: mainPosition[0],
-          y: mainPosition[1] + fontSize * (values.length + 1),
-        },
-        horizontalLine: {
-          x1: mainPosition[0],
-          x2: mainPosition[0],
-          y1: mainPosition[1],
-          y2: viewBox[3] + viewBox[1],
-        },
-        verticalLine: {
-          x1: viewBox[0],
-          x2: mainPosition[0],
-          y1: mainPosition[1],
-          y2: mainPosition[1],
-        },
+        dateText: xAxisText,
+        mainPosition: main,
       };
     });
-  }, [fontSize, formatter, transformer, values, viewBox, xAxisTextFormatter]);
+  }, [formatter, transformer, values, xAxisTextFormatter]);
 
   const findClosest = useCallback(
     (value: number) => {
       const items = cachedData;
-      if (items == null) return undefined;
+      if (!items) return;
 
-      let low = 0,
-        high = items.length - 1;
+      let low = 0;
+      let high = items.length - 1;
+
       while (low <= high) {
         const mid = Math.floor((low + high) / 2);
         const midVal = items[mid]?.x ?? 0;
@@ -146,86 +72,83 @@ export default function Pointer({
     [cachedData]
   );
 
-  const pointer = useMemo<Pointer | undefined>(() => {
+  const pointer = useMemo(() => {
     if (pointerValue == null) return;
-    const offsettedPosition =
+    const adjusted =
       pointerValue + marginViewBox[0] * (1 - pointerValue / width);
-    return findClosest(offsettedPosition);
+    return findClosest(adjusted);
   }, [findClosest, marginViewBox, pointerValue, width]);
 
-  const textsElements = useMemo(() => {
-    if (pointer == null) return;
-    return pointer.yAxisTexts.map(({ t, x, y }, i) => {
-      return (
-        <Text
-          key={i}
-          x={x}
-          y={y}
-          fill={'white'}
-          textAnchor="middle"
-          alignmentBaseline="hanging"
-          fontFamily="sans"
-          fontWeight="bold"
-          fontSize={fontSize}
-        >
-          {t}
-        </Text>
-      );
-    });
-  }, [fontSize, pointer]);
+  if (!pointer) return null;
 
-  const circlesElements = useMemo(() => {
-    if (pointer == null) return;
-    return pointer.circles.map(({ cx, cy }, i) => (
-      <Circle key={i} fill={'white'} r={3} cx={cx} cy={cy} />
-    ));
-  }, [pointer]);
-
-  if (pointer == null) return;
+  const tooltipWidth = fontSize * 6;
+  const tooltipHeight = fontSize * (values.length + 1.5);
+  const tooltipX = width / 2 - tooltipWidth / 2;
+  const tooltipY = viewBox[1] - fontSize * 2;
 
   return (
     <G>
+      {/* Pointer crosshair lines */}
       <Line
-        x1={pointer.horizontalLine.x1}
-        x2={pointer.horizontalLine.x2}
-        y1={pointer.horizontalLine.y1}
-        y2={pointer.horizontalLine.y2}
-        stroke={'gray'}
+        x1={pointer.mainPosition[0]}
+        x2={pointer.mainPosition[0]}
+        y1={pointer.mainPosition[1]}
+        y2={viewBox[3]}
+        stroke="gray"
         strokeWidth={1}
         strokeDasharray={3}
       />
       <Line
-        x1={pointer.verticalLine.x1}
-        x2={pointer.verticalLine.x2}
-        y1={pointer.verticalLine.y1}
-        y2={pointer.verticalLine.y2}
-        stroke={'gray'}
+        x1={viewBox[0]}
+        x2={pointer.mainPosition[0]}
+        y1={pointer.mainPosition[1]}
+        y2={pointer.mainPosition[1]}
+        stroke="gray"
         strokeWidth={1}
         strokeDasharray={3}
       />
-      {circlesElements}
+
+      {/* Circles on data points */}
+      {pointer.circles.map((c, i) => (
+        <Circle key={i} cx={c.cx} cy={c.cy} r={3} fill="white" />
+      ))}
+
+      {/* FIXED tooltip rectangle */}
       <Rect
-        x={pointer.rect.x}
-        y={pointer.rect.y}
-        width={pointer.rect.width}
-        height={pointer.rect.height}
-        stroke={'white'}
+        x={tooltipX}
+        y={tooltipY}
+        width={tooltipWidth}
+        height={tooltipHeight}
+        fill="rgba(0,0,0,0.5)"
+        stroke="white"
         strokeWidth={1}
-        fill={'rgba(0,0,0,0.5)'}
-        rx={3}
-        ry={3}
+        rx={4}
+        ry={4}
       />
-      {textsElements}
+
+      {pointer.yAxisTexts.map((text, i) => (
+        <Text
+          key={i}
+          x={width / 2}
+          y={tooltipY + fontSize * (i + 1)}
+          textAnchor="middle"
+          alignmentBaseline="hanging"
+          fill="white"
+          fontSize={fontSize}
+          fontWeight="bold"
+        >
+          {text}
+        </Text>
+      ))}
+
       <Text
-        x={pointer.dateText.x}
-        y={pointer.dateText.y}
-        fill={'white'}
+        x={width / 2}
+        y={tooltipY - fontSize * 1.2}
+        fill="white"
         textAnchor="middle"
-        alignmentBaseline="hanging"
-        fontFamily="sans"
         fontSize={fontSize * 0.85}
       >
-        {pointer.dateText.t}
+        {pointer.dateText}
       </Text>
     </G>
   );
