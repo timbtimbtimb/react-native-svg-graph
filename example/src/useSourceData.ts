@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import distance from './distance';
 import time from './time';
 
-const HOST = 'https://api.snowmap.fr';
-// const HOST = 'http://localhost:8080';
+const API_ENDPOINT = 'https://api.snowmap.fr/v3/weatherStations';
+// const API_ENDPOINT = 'http://localhost:3000/weatherStations';
 
 export interface WeatherStationData {
   name: string;
@@ -38,13 +38,13 @@ export default function useSourceData() {
 
   useEffect(() => {
     (async () => {
-      const r = await fetch(`${HOST}/v3/weatherStations`);
+      const r = await fetch(API_ENDPOINT);
       const { features }: { features: WeatherStation[] } = await r.json();
       const randomIndex = Math.floor(Math.random() * features.length);
       const n = features[randomIndex] as WeatherStation;
       const { name } = n.properties;
 
-      const response = await fetch(`${HOST}/v3/weatherStations/${name}`);
+      const response = await fetch(`${API_ENDPOINT}/${name}`);
       const data: WeatherStation = await response.json();
 
       setStation(data);

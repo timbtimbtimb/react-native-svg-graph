@@ -84,11 +84,10 @@ export default function Pointer({
   const tooltipWidth = fontSize * 6;
   const tooltipHeight = fontSize * (values.length + 1.5);
   const tooltipX = width / 2 - tooltipWidth / 2;
-  const tooltipY = viewBox[1] - fontSize * 2;
+  const tooltipY = viewBox[1];
 
   return (
     <G>
-      {/* Pointer crosshair lines */}
       <Line
         x1={pointer.mainPosition[0]}
         x2={pointer.mainPosition[0]}
@@ -108,12 +107,9 @@ export default function Pointer({
         strokeDasharray={3}
       />
 
-      {/* Circles on data points */}
       {pointer.circles.map((c, i) => (
         <Circle key={i} cx={c.cx} cy={c.cy} r={3} fill="white" />
       ))}
-
-      {/* FIXED tooltip rectangle */}
       <Rect
         x={tooltipX}
         y={tooltipY}
@@ -130,7 +126,7 @@ export default function Pointer({
         <Text
           key={i}
           x={width / 2}
-          y={tooltipY + fontSize * (i + 1)}
+          y={tooltipY + fontSize * (i + 1.25)}
           textAnchor="middle"
           alignmentBaseline="hanging"
           fill="white"
@@ -143,10 +139,11 @@ export default function Pointer({
 
       <Text
         x={width / 2}
-        y={tooltipY - fontSize * 1.2}
-        fill="white"
+        y={tooltipY + fontSize * 0.25}
         textAnchor="middle"
-        fontSize={fontSize * 0.85}
+        alignmentBaseline="hanging"
+        fill="white"
+        fontSize={fontSize}
       >
         {pointer.dateText}
       </Text>
