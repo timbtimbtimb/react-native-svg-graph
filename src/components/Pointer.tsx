@@ -81,7 +81,7 @@ export default function Pointer({
 
   if (!pointer) return null;
 
-  const tooltipWidth = fontSize * 6;
+  const tooltipWidth = fontSize * 5;
   const tooltipHeight = fontSize * (values.length + 1.5);
   const tooltipX = width / 2 - tooltipWidth / 2;
   const tooltipY = viewBox[1];
@@ -92,7 +92,7 @@ export default function Pointer({
         x1={pointer.mainPosition[0]}
         x2={pointer.mainPosition[0]}
         y1={pointer.mainPosition[1]}
-        y2={viewBox[3]}
+        y2={marginViewBox[0]}
         stroke="gray"
         strokeWidth={1}
         strokeDasharray={3}
@@ -131,12 +131,12 @@ export default function Pointer({
           alignmentBaseline="hanging"
           fill="white"
           fontSize={fontSize}
+          fontFamily="sans"
           fontWeight="bold"
         >
           {text}
         </Text>
       ))}
-
       <Text
         x={width / 2}
         y={tooltipY + fontSize * 0.25}
@@ -144,6 +144,7 @@ export default function Pointer({
         alignmentBaseline="hanging"
         fill="white"
         fontSize={fontSize}
+        fontFamily="sans"
       >
         {pointer.dateText}
       </Text>
