@@ -6,7 +6,7 @@ import { usePointerContext } from '../contexts/PointerContext';
 export default function Pointer({
   xAxisTextFormatter,
 }: {
-  xAxisTextFormatter: (v: number) => string;
+  xAxisTextFormatter?: (v: number) => string;
 }) {
   const {
     fontSize,
@@ -24,7 +24,7 @@ export default function Pointer({
     return (values[0] ?? []).map((v, j) => {
       const positions = [v].map(transformer);
       const main = positions[0] ?? [0, 0];
-      const xAxisText = xAxisTextFormatter(v?.[0] ?? 0);
+      const xAxisText = xAxisTextFormatter?.(v?.[0] ?? 0);
 
       const circles = values.map((val) => {
         const p = transformer(val[j] ?? [0, 0]);
@@ -82,7 +82,8 @@ export default function Pointer({
   if (!pointer) return null;
 
   const tooltipWidth = fontSize * 5;
-  const tooltipHeight = fontSize * (values.length + 1.5);
+  const tooltipHeight =
+    fontSize * (values.length + (pointer.dateText == null ? 0.5 : 1.5));
   const tooltipX = width / 2 - tooltipWidth / 2;
   const tooltipY = viewBox[1];
 
@@ -126,7 +127,9 @@ export default function Pointer({
         <Text
           key={i}
           x={width / 2}
-          y={tooltipY + fontSize * (i + 1.25)}
+          y={
+            tooltipY + fontSize * (i + (pointer.dateText == null ? 0.25 : 1.25))
+          }
           textAnchor="middle"
           alignmentBaseline="hanging"
           fill="white"
@@ -137,17 +140,19 @@ export default function Pointer({
           {text}
         </Text>
       ))}
-      <Text
-        x={width / 2}
-        y={tooltipY + fontSize * 0.25}
-        textAnchor="middle"
-        alignmentBaseline="hanging"
-        fill="white"
-        fontSize={fontSize}
-        fontFamily="sans"
-      >
-        {pointer.dateText}
-      </Text>
+      {pointer.dateText != null && (
+        <Text
+          x={width / 2}
+          y={tooltipY + fontSize * 0.25}
+          textAnchor="middle"
+          alignmentBaseline="hanging"
+          fill="white"
+          fontSize={fontSize}
+          fontFamily="sans"
+        >
+          {pointer.dateText}
+        </Text>
+      )}
     </G>
   );
 }

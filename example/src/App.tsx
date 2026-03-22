@@ -82,7 +82,7 @@ export default function App() {
               },
             ]}
           />
-          <Pointer xAxisTextFormatter={(v: number) => `${v.toFixed(2)} km`} />
+          <Pointer />
         </Graph>
         <Text style={styles.graphTitle}>Altitude (m) / Distance (km)</Text>
       </View>
