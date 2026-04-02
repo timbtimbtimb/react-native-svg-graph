@@ -153,6 +153,6 @@
     "version": "0.54.3"
   },
   "dependencies": {
-    "react-native-svg": "^15.15.1"
+    "react-native-svg": "^15.12.1"
   }
 }
