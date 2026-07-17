@@ -1,16 +1,19 @@
 import {
   createContext,
-  useCallback,
   useContext,
-  useState,
+  useMemo,
   type ReactElement,
   type ReactNode,
 } from 'react';
+import { useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 interface PointerContextType {
-  onPointerMove: (x: number) => void;
-  onMouseLeave: () => void;
-  pointerValue: number | null;
+  // Horizontal position of the pointer inside the graph, in layout pixels
+  // (relative to the SVG). `-1` means the pointer is inactive (not hovering
+  // on web, not pressing on native). This is a Reanimated shared value so the
+  // pointer overlay can follow the cursor on the UI thread without triggering
+  // a React re-render on every move.
+  pointerX: SharedValue<number>;
 }
 
 export const PointerContext = createContext<undefined | PointerContextType>(
@@ -32,21 +35,11 @@ export function PointerContextProvider({
 }: {
   children: ReactNode;
 }): ReactElement {
-  const [pointerValue, setPointerValue] = useState<number | null>(null);
+  const pointerX = useSharedValue(-1);
 
-  const onPointerMove = useCallback((x: number) => {
-    setPointerValue(x);
-  }, []);
-
-  const onMouseLeave = useCallback(() => {
-    setPointerValue(null);
-  }, []);
+  const value = useMemo(() => ({ pointerX }), [pointerX]);
 
   return (
-    <PointerContext.Provider
-      value={{ pointerValue, onPointerMove, onMouseLeave }}
-    >
-      {children}
-    </PointerContext.Provider>
+    <PointerContext.Provider value={value}>{children}</PointerContext.Provider>
   );
 }

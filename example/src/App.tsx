@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
   Graph,
   XAxis,
@@ -27,261 +28,263 @@ export default function App() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {station && (
+    <GestureHandlerRootView style={styles.root}>
+      <ScrollView style={styles.container}>
+        {station && (
+          <View>
+            <Text style={styles.title}>
+              {`${station?.properties.name} (${station?.properties.elevation} m) - [${station?.properties.name}]`}
+            </Text>
+            <Text style={styles.subtitle}>{station?.properties.region}</Text>
+            {sun && (
+              <>
+                <Text style={styles.subtitle}>
+                  {`Aube: ${sun?.sunrise.getHours()}h${sun?.sunrise.getMinutes().toString().padStart(2, '0')}`}
+                  {` - `}
+                  {`Crépuscule: ${sun?.sunset.getHours()}h${sun?.sunrise.getMinutes().toString().padStart(2, '0')}`}
+                </Text>
+              </>
+            )}
+          </View>
+        )}
         <View>
-          <Text style={styles.title}>
-            {`${station?.properties.name} (${station?.properties.elevation} m) - [${station?.properties.name}]`}
-          </Text>
-          <Text style={styles.subtitle}>{station?.properties.region}</Text>
-          {sun && (
-            <>
-              <Text style={styles.subtitle}>
-                {`Aube: ${sun?.sunrise.getHours()}h${sun?.sunrise.getMinutes().toString().padStart(2, '0')}`}
-                {` - `}
-                {`Crépuscule: ${sun?.sunset.getHours()}h${sun?.sunrise.getMinutes().toString().padStart(2, '0')}`}
-              </Text>
-            </>
-          )}
+          <Graph
+            values={[distance]}
+            width={width}
+            height={250}
+            zeroVisible={false}
+            fontSize={15}
+            formatter={(v: number) => `${v} m`}
+            style={styles.graph}
+            smooth={false}
+          >
+            <XAxis />
+            <YAxis />
+            <Grid
+              axis={'y'}
+              position={'top'}
+              type={'value'}
+              strokeWidth={1}
+              stroke={'rgb(50,50,50)'}
+              formatter={(v: number) => `${v}`}
+            />
+            <Grid
+              axis={'x'}
+              type={'value'}
+              position={'bottom'}
+              strokeWidth={1}
+              stroke={'rgb(50,50,50)'}
+              formatter={(v: number) => `${v}`}
+            />
+            <Lines
+              colors={[
+                {
+                  positiveColor: 'rgba(200, 200, 200, 1)',
+                  negativeColor: 'rgba(200, 200, 200, 1)',
+                },
+              ]}
+            />
+            <Pointer />
+          </Graph>
+          <Text style={styles.graphTitle}>Altitude (m) / Distance (km)</Text>
         </View>
-      )}
-      <View>
-        <Graph
-          values={[distance]}
-          width={width}
-          height={250}
-          zeroVisible={false}
-          fontSize={15}
-          formatter={(v: number) => `${v} m`}
-          style={styles.graph}
-          smooth={false}
-        >
-          <XAxis />
-          <YAxis />
-          <Grid
-            axis={'y'}
-            position={'top'}
-            type={'value'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => `${v}`}
-          />
-          <Grid
-            axis={'x'}
-            type={'value'}
-            position={'bottom'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => `${v}`}
-          />
-          <Lines
-            colors={[
-              {
-                positiveColor: 'rgba(200, 200, 200, 1)',
-                negativeColor: 'rgba(200, 200, 200, 1)',
-              },
-            ]}
-          />
-          <Pointer />
-        </Graph>
-        <Text style={styles.graphTitle}>Altitude (m) / Distance (km)</Text>
-      </View>
-      <View>
-        <Graph
-          values={[time]}
-          width={width}
-          height={250}
-          zeroVisible={false}
-          fontSize={15}
-          formatter={(v: number) => `${v} m`}
-          style={styles.graph}
-          smooth={false}
-        >
-          <XAxis />
-          <YAxis />
-          <Grid
-            axis={'y'}
-            position={'top'}
-            type={'value'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => `${v}`}
-          />
-          <Grid
-            axis={'x'}
-            position={'bottom'}
-            type={'hours'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => {
-              const date = new Date(v);
-              return `${date.getHours().toString()}h`;
-            }}
-          />
-          <Lines
-            colors={[
-              {
-                positiveColor: 'rgba(200, 200, 200, 1)',
-                negativeColor: 'rgba(200, 200, 200, 1)',
-              },
-            ]}
-          />
-          <Pointer xAxisTextFormatter={xAxisTextFormatter} />
-        </Graph>
-        <Text style={styles.graphTitle}>Altitude (m) / Time (h)</Text>
-      </View>
-      <View>
-        <Graph
-          values={temperatures}
-          width={width}
-          height={250}
-          zeroVisible={true}
-          fontSize={15}
-          formatter={(v: number) => `${v}°`}
-          style={styles.graph}
-        >
-          <XAxis atZero />
-          <YAxis />
-          <Grid
-            axis={'y'}
-            position={'top'}
-            type={'value'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
+        <View>
+          <Graph
+            values={[time]}
+            width={width}
+            height={250}
+            zeroVisible={false}
+            fontSize={15}
+            formatter={(v: number) => `${v} m`}
+            style={styles.graph}
+            smooth={false}
+          >
+            <XAxis />
+            <YAxis />
+            <Grid
+              axis={'y'}
+              position={'top'}
+              type={'value'}
+              strokeWidth={1}
+              stroke={'rgb(50,50,50)'}
+              formatter={(v: number) => `${v}`}
+            />
+            <Grid
+              axis={'x'}
+              position={'bottom'}
+              type={'hours'}
+              strokeWidth={1}
+              stroke={'rgb(50,50,50)'}
+              formatter={(v: number) => {
+                const date = new Date(v);
+                return `${date.getHours().toString()}h`;
+              }}
+            />
+            <Lines
+              colors={[
+                {
+                  positiveColor: 'rgba(200, 200, 200, 1)',
+                  negativeColor: 'rgba(200, 200, 200, 1)',
+                },
+              ]}
+            />
+            <Pointer xAxisTextFormatter={xAxisTextFormatter} />
+          </Graph>
+          <Text style={styles.graphTitle}>Altitude (m) / Time (h)</Text>
+        </View>
+        <View>
+          <Graph
+            values={temperatures}
+            width={width}
+            height={250}
+            zeroVisible={true}
+            fontSize={15}
             formatter={(v: number) => `${v}°`}
-          />
-          <Grid
-            axis={'x'}
-            position={'bottom'}
-            type={'weeks'}
-            strokeWidth={2}
-            stroke={'rgb(100,100,100)'}
-            formatter={() => ''}
-          />
-          <Grid
-            axis={'x'}
-            position={'bottom'}
-            type={'days'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            reduce={false}
-            formatter={(v: number) => new Date(v).getDate().toString()}
-          />
-          <Lines
-            colors={[
-              {
-                positiveColor: 'rgba(255, 123, 0, 1)',
-                negativeColor: 'rgba(0, 102, 255, 1)',
-              },
-            ]}
-          />
-          <Pointer xAxisTextFormatter={xAxisTextFormatter} />
-        </Graph>
-        <Text style={styles.graphTitle}>Temperatures (°C)</Text>
-      </View>
-      <View>
-        <Graph
-          values={wind}
-          width={width}
-          height={250}
-          zeroVisible={true}
-          fontSize={15}
-          formatter={(v: number) => `${v} km/h`}
-          style={styles.graph}
-        >
-          <XAxis />
-          <YAxis />
-          <Grid
-            axis={'y'}
-            position={'top'}
-            type={'value'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            formatter={(v: number) => `${v}`}
-          />
-          <Grid
-            axis={'x'}
-            position={'bottom'}
-            type={'weeks'}
-            strokeWidth={2}
-            stroke={'rgb(100,100,100)'}
-            formatter={() => ''}
-          />
-          <Grid
-            axis={'x'}
-            position={'bottom'}
-            type={'days'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            reduce={false}
-            formatter={(v: number) => new Date(v).getDate().toString()}
-          />
-          <Lines
-            colors={[
-              {
-                positiveColor: 'rgba(200, 200, 200, 1)',
-                negativeColor: 'rgba(200, 200, 200, 1)',
-              },
-              {
-                positiveColor: 'rgba(200, 200, 200, 0.33)',
-                negativeColor: 'rgba(200, 200, 200, 0.33)',
-              },
-            ]}
-          />
-          <Pointer xAxisTextFormatter={xAxisTextFormatter} />
-        </Graph>
-        <Text style={styles.graphTitle}>Wind (km/h)</Text>
-      </View>
-      <View>
-        <Graph
-          values={snowDepth}
-          width={width}
-          height={250}
-          zeroVisible={true}
-          fontSize={15}
-          formatter={(v: number) => `${v} cm`}
-          style={styles.graph}
-        >
-          <XAxis />
-          <YAxis />
-          <Grid
-            axis={'y'}
-            position={'top'}
-            type={'value'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
+            style={styles.graph}
+          >
+            <XAxis atZero />
+            <YAxis />
+            <Grid
+              axis={'y'}
+              position={'top'}
+              type={'value'}
+              strokeWidth={1}
+              stroke={'rgb(50,50,50)'}
+              formatter={(v: number) => `${v}°`}
+            />
+            <Grid
+              axis={'x'}
+              position={'bottom'}
+              type={'weeks'}
+              strokeWidth={2}
+              stroke={'rgb(100,100,100)'}
+              formatter={() => ''}
+            />
+            <Grid
+              axis={'x'}
+              position={'bottom'}
+              type={'days'}
+              strokeWidth={1}
+              stroke={'rgb(50,50,50)'}
+              reduce={false}
+              formatter={(v: number) => new Date(v).getDate().toString()}
+            />
+            <Lines
+              colors={[
+                {
+                  positiveColor: 'rgba(255, 123, 0, 1)',
+                  negativeColor: 'rgba(0, 102, 255, 1)',
+                },
+              ]}
+            />
+            <Pointer xAxisTextFormatter={xAxisTextFormatter} />
+          </Graph>
+          <Text style={styles.graphTitle}>Temperatures (°C)</Text>
+        </View>
+        <View>
+          <Graph
+            values={wind}
+            width={width}
+            height={250}
+            zeroVisible={true}
+            fontSize={15}
+            formatter={(v: number) => `${v} km/h`}
+            style={styles.graph}
+          >
+            <XAxis />
+            <YAxis />
+            <Grid
+              axis={'y'}
+              position={'top'}
+              type={'value'}
+              strokeWidth={1}
+              stroke={'rgb(50,50,50)'}
+              formatter={(v: number) => `${v}`}
+            />
+            <Grid
+              axis={'x'}
+              position={'bottom'}
+              type={'weeks'}
+              strokeWidth={2}
+              stroke={'rgb(100,100,100)'}
+              formatter={() => ''}
+            />
+            <Grid
+              axis={'x'}
+              position={'bottom'}
+              type={'days'}
+              strokeWidth={1}
+              stroke={'rgb(50,50,50)'}
+              reduce={false}
+              formatter={(v: number) => new Date(v).getDate().toString()}
+            />
+            <Lines
+              colors={[
+                {
+                  positiveColor: 'rgba(200, 200, 200, 1)',
+                  negativeColor: 'rgba(200, 200, 200, 1)',
+                },
+                {
+                  positiveColor: 'rgba(200, 200, 200, 0.33)',
+                  negativeColor: 'rgba(200, 200, 200, 0.33)',
+                },
+              ]}
+            />
+            <Pointer xAxisTextFormatter={xAxisTextFormatter} />
+          </Graph>
+          <Text style={styles.graphTitle}>Wind (km/h)</Text>
+        </View>
+        <View>
+          <Graph
+            values={snowDepth}
+            width={width}
+            height={250}
+            zeroVisible={true}
+            fontSize={15}
             formatter={(v: number) => `${v} cm`}
-          />
-          <Grid
-            axis={'x'}
-            position={'bottom'}
-            type={'weeks'}
-            strokeWidth={2}
-            stroke={'rgb(100,100,100)'}
-            formatter={() => ''}
-          />
-          <Grid
-            axis={'x'}
-            position={'bottom'}
-            type={'days'}
-            strokeWidth={1}
-            stroke={'rgb(50,50,50)'}
-            reduce={false}
-            formatter={(v: number) => new Date(v).getDate().toString()}
-          />
-          <Lines
-            colors={[
-              {
-                positiveColor: 'rgba(0, 102, 255, 1)',
-                negativeColor: 'rgba(0, 102, 255, 1)',
-              },
-            ]}
-          />
-          <Pointer xAxisTextFormatter={xAxisTextFormatter} />
-        </Graph>
-        <Text style={styles.graphTitle}>Snow (cm)</Text>
-      </View>
-    </ScrollView>
+            style={styles.graph}
+          >
+            <XAxis />
+            <YAxis />
+            <Grid
+              axis={'y'}
+              position={'top'}
+              type={'value'}
+              strokeWidth={1}
+              stroke={'rgb(50,50,50)'}
+              formatter={(v: number) => `${v} cm`}
+            />
+            <Grid
+              axis={'x'}
+              position={'bottom'}
+              type={'weeks'}
+              strokeWidth={2}
+              stroke={'rgb(100,100,100)'}
+              formatter={() => ''}
+            />
+            <Grid
+              axis={'x'}
+              position={'bottom'}
+              type={'days'}
+              strokeWidth={1}
+              stroke={'rgb(50,50,50)'}
+              reduce={false}
+              formatter={(v: number) => new Date(v).getDate().toString()}
+            />
+            <Lines
+              colors={[
+                {
+                  positiveColor: 'rgba(0, 102, 255, 1)',
+                  negativeColor: 'rgba(0, 102, 255, 1)',
+                },
+              ]}
+            />
+            <Pointer xAxisTextFormatter={xAxisTextFormatter} />
+          </Graph>
+          <Text style={styles.graphTitle}>Snow (cm)</Text>
+        </View>
+      </ScrollView>
+    </GestureHandlerRootView>
   );
 }
 
@@ -291,6 +294,9 @@ const styles = StyleSheet.create({
     overflow: 'scroll',
     width: '100%',
     padding: 15,
+  },
+  root: {
+    flex: 1,
   },
   graph: {
     backgroundColor: 'rgba(0,0,0,0)',

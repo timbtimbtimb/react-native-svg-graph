@@ -17,6 +17,7 @@ import { type ColorValue } from 'react-native';
 import svgCoords2SvgLineCoords from '../utils/svgCoords2SvgLineCoords';
 import getMasksSvgCoords from '../utils/getMasksSvgCoords';
 import getPolygonsSvgCoords from '../utils/getPolygonsSvgCoords';
+import decimate, { type DecimationMethod } from '../utils/decimate';
 
 export type Formatter = (v: number) => string;
 
@@ -57,6 +58,7 @@ interface Props {
   zeroVisible: boolean;
   smooth: boolean;
   formatter: Formatter;
+  decimation: DecimationMethod;
 }
 
 export const GraphContext = createContext<undefined | GraphContextType>(
@@ -81,8 +83,18 @@ export function GraphContextProvider({
   zeroVisible,
   smooth,
   formatter,
+  decimation,
 }: Props): ReactElement {
   const [width, setWidth] = useState<number>(1);
+
+  // Screen-space simplification: drop sub-pixel points from the rendered paths
+  // when a series has more points than horizontal pixels. `values` stays at full
+  // resolution so the pointer tooltip still snaps to real data points.
+  const renderValues = useMemo(
+    () =>
+      values.map((series) => decimate(series, Math.ceil(width), decimation)),
+    [decimation, values, width]
+  );
 
   const bounds = useMemo<Bounds>(() => {
     return getBounds(values.flat(), zeroVisible);
@@ -107,8 +119,10 @@ export function GraphContextProvider({
 
   const lines = useMemo(
     () =>
-      values.map((v) => svgCoords2SvgLineCoords(v.map(transformer), smooth)),
-    [smooth, transformer, values]
+      renderValues.map((v) =>
+        svgCoords2SvgLineCoords(v.map(transformer), smooth)
+      ),
+    [smooth, transformer, renderValues]
   );
 
   const masks = useMemo(
@@ -117,10 +131,10 @@ export function GraphContextProvider({
   );
 
   const gradients = useMemo(() => {
-    return values.map((v) =>
+    return renderValues.map((v) =>
       getPolygonsSvgCoords(bounds, transformer, v, smooth)
     );
-  }, [bounds, smooth, transformer, values]);
+  }, [bounds, smooth, transformer, renderValues]);
 
   return (
     <GraphContext.Provider

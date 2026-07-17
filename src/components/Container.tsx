@@ -1,13 +1,8 @@
 import Svg from 'react-native-svg';
 import { useGraphContext } from '../contexts/GraphContext';
-import {
-  PanResponder,
-  Platform,
-  StyleSheet,
-  View,
-  type ViewProps,
-} from 'react-native';
-import { useRef, type ReactNode } from 'react';
+import { StyleSheet, View, type ViewProps } from 'react-native';
+import { useMemo, type ReactNode } from 'react';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { usePointerContext } from '../contexts/PointerContext';
 
 export default function Container({
@@ -17,24 +12,43 @@ export default function Container({
   children: ReactNode;
 } & ViewProps) {
   const { viewBox, marginViewBox, setWidth } = useGraphContext();
-  const { onPointerMove, onMouseLeave } = usePointerContext();
+  const { pointerX } = usePointerContext();
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponderCapture: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponderCapture: () => true,
-      onPanResponderTerminationRequest: () => true,
-      onShouldBlockNativeResponder: () => true,
-      onPanResponderMove: (_, { moveX }) => {
-        onPointerMove(moveX);
-      },
-      onPanResponderRelease: () => {
-        onMouseLeave();
-      },
-    })
-  );
+  const gesture = useMemo(() => {
+    // Native: track finger drags. `e.x` is view-relative (relative to the SVG),
+    // which is the same coordinate space the pointer overlay expects.
+    const pan = Gesture.Pan()
+      .onBegin((e) => {
+        'worklet';
+        pointerX.value = e.x;
+      })
+      .onUpdate((e) => {
+        'worklet';
+        pointerX.value = e.x;
+      })
+      .onFinalize(() => {
+        'worklet';
+        pointerX.value = -1;
+      });
+
+    // Web: hover happens without a pressed button, which Pan does not track.
+    // Hover maps to mouse enter/move/leave. It is inert on touch devices.
+    const hover = Gesture.Hover()
+      .onBegin((e) => {
+        'worklet';
+        pointerX.value = e.x;
+      })
+      .onUpdate((e) => {
+        'worklet';
+        pointerX.value = e.x;
+      })
+      .onEnd(() => {
+        'worklet';
+        pointerX.value = -1;
+      });
+
+    return Gesture.Race(hover, pan);
+  }, [pointerX]);
 
   return (
     <View
@@ -47,22 +61,17 @@ export default function Container({
         setWidth(event.nativeEvent.layout.width);
       }}
     >
-      <Svg
-        {...(Platform.OS === 'web' ? {} : panResponder.current.panHandlers)}
-        preserveAspectRatio="none slice"
-        viewBox={marginViewBox.join(' ')}
-        width={viewBox[2]}
-        height={viewBox[3]}
-        style={styles.svg}
-        onMouseLeave={Platform.OS === 'web' ? onMouseLeave : undefined}
-        onPointerMove={
-          Platform.OS === 'web'
-            ? (event) => onPointerMove(event.nativeEvent.offsetX)
-            : undefined
-        }
-      >
-        {children}
-      </Svg>
+      <GestureDetector gesture={gesture}>
+        <Svg
+          preserveAspectRatio="none slice"
+          viewBox={marginViewBox.join(' ')}
+          width={viewBox[2]}
+          height={viewBox[3]}
+          style={styles.svg}
+        >
+          {children}
+        </Svg>
+      </GestureDetector>
     </View>
   );
 }
