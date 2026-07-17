@@ -1,6 +1,6 @@
 {
   "name": "@snowmap.fr/react-native-svg-graph",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple yet beautiful SVG line graph",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
