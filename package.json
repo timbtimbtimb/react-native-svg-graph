@@ -56,7 +56,6 @@
   },
   "homepage": "https://github.com/timbtimbtimb/react-native-svg-graph#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
   "devDependencies": {
