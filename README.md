@@ -36,6 +36,8 @@ export default function App() {
       zeroVisible={false}
       fontSize={15}
       formatter={(v: number) => `${v} m`}
+      xLegend={{ label: 'Distance', unit: 'KM' }}
+      yLegend={{ label: 'Altitude', unit: 'M' }}
     >
       <XAxis />
       <YAxis />
@@ -109,6 +111,15 @@ const distance: [number, number][] = [
 ];
 ```
 
+
+## Legends
+
+`xLegend` and `yLegend` name what the axes plot. Each takes
+`{ label, unit?, color? }`: the unit is drawn after a bullet at half opacity, and
+the y legend reads bottom-to-top beside its tick labels.
+
+The graph widens its own margin to make room for whichever legend it is given,
+so a legend can neither crowd the tick labels nor be covered by the plot.
 
 ## Contributing
 

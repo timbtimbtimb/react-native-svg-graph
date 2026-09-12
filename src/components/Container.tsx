@@ -4,6 +4,7 @@ import { StyleSheet, View, type ViewProps } from 'react-native';
 import { useMemo, type ReactNode } from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { usePointerContext } from '../contexts/PointerContext';
+import Legends from './Legends';
 
 // How far a finger has to travel before the drag is read as a graph scrub
 // rather than a scroll. The same number is used for both axes on purpose:
@@ -93,6 +94,7 @@ export default function Container({
           style={styles.svg}
         >
           {children}
+          <Legends />
         </Svg>
       </GestureDetector>
     </View>

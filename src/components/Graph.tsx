@@ -1,6 +1,10 @@
 import type { ViewProps } from 'react-native';
 import Container from './Container';
-import { GraphContextProvider, type Formatter } from '../contexts/GraphContext';
+import {
+  GraphContextProvider,
+  type Formatter,
+  type Legend,
+} from '../contexts/GraphContext';
 import { PointerContextProvider } from '../contexts/PointerContext';
 import type { DecimationMethod } from '../utils/decimate';
 import type { ReactElement } from 'react';
@@ -17,6 +21,10 @@ interface Props {
   // How to simplify dense series before rendering. Defaults to 'minmax'
   // (keeps vertical spikes); 'lttb' preserves smooth shape; 'none' disables it.
   decimation?: DecimationMethod;
+  // What the axes plot, named in the graph's own margin. The x legend sits
+  // under its tick labels, the y one reads bottom-to-top beside them.
+  xLegend?: Legend;
+  yLegend?: Legend;
 }
 
 export default function Graph({
@@ -29,6 +37,8 @@ export default function Graph({
   zeroVisible,
   smooth,
   decimation,
+  xLegend,
+  yLegend,
   ...props
 }: Props & ViewProps): ReactElement {
   return (
@@ -41,6 +51,8 @@ export default function Graph({
       smooth={smooth ?? true}
       formatter={formatter}
       decimation={decimation ?? 'minmax'}
+      xLegend={xLegend}
+      yLegend={yLegend}
     >
       <PointerContextProvider>
         <Container {...props}>{children}</Container>

@@ -26,6 +26,17 @@ export interface Color {
   negativeColor: ColorValue;
 }
 
+/** The name of what an axis plots, and the unit it is counted in. */
+export interface Legend {
+  label: string;
+  unit?: string;
+  color?: ColorValue;
+}
+
+// How much room a legend needs, as a multiple of the font size, on top of the
+// margin the tick labels already take.
+const LEGEND_MARGIN = 1.5;
+
 interface GraphContextType {
   viewBox: ViewBox;
   marginViewBox: ViewBox;
@@ -47,6 +58,8 @@ interface GraphContextType {
   }>;
   transformer: Transformer;
   formatter: Formatter;
+  xLegend?: Legend;
+  yLegend?: Legend;
 }
 
 interface Props {
@@ -59,6 +72,8 @@ interface Props {
   smooth: boolean;
   formatter: Formatter;
   decimation: DecimationMethod;
+  xLegend?: Legend;
+  yLegend?: Legend;
 }
 
 export const GraphContext = createContext<undefined | GraphContextType>(
@@ -84,6 +99,8 @@ export function GraphContextProvider({
   smooth,
   formatter,
   decimation,
+  xLegend,
+  yLegend,
 }: Props): ReactElement {
   const [width, setWidth] = useState<number>(1);
 
@@ -102,15 +119,20 @@ export function GraphContextProvider({
 
   const viewBox = useMemo(() => getViewBox(width, height), [width, height]);
 
-  const marginViewBox = useMemo<ViewBox>(
-    () => [
-      viewBox[0] - fontSize * 3,
+  // A legend is given room beyond what the tick labels need rather than a
+  // share of it, so the two can never crowd one another.
+  const marginViewBox = useMemo<ViewBox>(() => {
+    const legend = fontSize * LEGEND_MARGIN;
+    const left = fontSize * 3 + (yLegend == null ? 0 : legend);
+    const bottom = fontSize * 2.5 + (xLegend == null ? 0 : legend);
+
+    return [
+      viewBox[0] - left,
       viewBox[1] - fontSize,
-      viewBox[2] + fontSize * 3,
-      viewBox[3] + fontSize * 2.5,
-    ],
-    [fontSize, viewBox]
-  );
+      viewBox[2] + left,
+      viewBox[3] + bottom,
+    ];
+  }, [fontSize, viewBox, xLegend, yLegend]);
 
   const transformer = useMemo(
     () => getTransformer(values.flat(), viewBox, bounds),
@@ -153,6 +175,8 @@ export function GraphContextProvider({
         formatter,
         transformer,
         values,
+        xLegend,
+        yLegend,
       }}
     >
       {children}
