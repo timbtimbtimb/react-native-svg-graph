@@ -94,9 +94,13 @@ export default function Container({
           style={styles.svg}
         >
           {children}
-          <Legends />
         </Svg>
       </GestureDetector>
+      {/* Outside the SVG, and absolutely positioned over it: the legends are
+          laid out with flexbox, which the SVG coordinate system has no notion
+          of. They sit in the margin the view box already set aside for them,
+          and take no touches, so the scrub gesture still has the whole graph. */}
+      <Legends />
     </View>
   );
 }

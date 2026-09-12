@@ -34,8 +34,10 @@ export interface Legend {
 }
 
 // How much room a legend needs, as a multiple of the font size, on top of the
-// margin the tick labels already take.
-const LEGEND_MARGIN = 1.5;
+// margin the tick labels already take. Exported because `Legends` lays itself
+// out over exactly this strip, and the two reading different numbers would put
+// the label somewhere the plot had not been shortened for.
+export const LEGEND_MARGIN = 1.5;
 
 interface GraphContextType {
   viewBox: ViewBox;
