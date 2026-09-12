@@ -2,9 +2,10 @@ import type { ReactElement } from 'react';
 import { G, Text, TSpan } from 'react-native-svg';
 import { useGraphContext, type Legend } from '../contexts/GraphContext';
 
-// The gap the bullet sits in is made of non-breaking spaces: SVG collapses a
-// run of ordinary whitespace down to one space, so `  •  ` would read as ` • `.
-const SEPARATOR = '  •  ';
+// A non-breaking space either side of the bullet. An ordinary one is not safe
+// here: SVG strips whitespace from the edges of a text chunk, and the unit
+// begins one of its own as a `TSpan`.
+const SEPARATOR = '\u00a0•\u00a0';
 
 function LegendText({
   legend,
