@@ -117,7 +117,10 @@ export default function Pointer({
     });
   }, [barsTooltip, formatter, values, xAxisTextFormatter]);
 
-  const marginLeft = marginViewBox[0];
+  // The SVG stretches its view box, margins included, over its whole width
+  // (`preserveAspectRatio="none"`), so a pixel maps to the view box's units
+  // linearly, from its left edge to its right — past the plot on both sides.
+  const [viewBoxLeft, , viewBoxWidth] = marginViewBox;
 
   // Binary-search the closest data point on the UI thread, every frame.
   const selected = useDerivedValue<Selected>(() => {
@@ -129,7 +132,7 @@ export default function Pointer({
       return { active: false, idx: -1, mainX: 0, mainY: 0 };
     }
 
-    const adjusted = px + marginLeft * (1 - px / width);
+    const adjusted = viewBoxLeft + (px / width) * viewBoxWidth;
 
     let low = 0;
     let high = n - 1;
@@ -159,7 +162,7 @@ export default function Pointer({
     };
   });
 
-  // Vertical crosshair: follows the cursor, drops to the top margin.
+  // Vertical crosshair: from the point down to the x axis.
   const verticalLineProps = useAnimatedProps<LineProps>(() => {
     'worklet';
     return {
@@ -215,7 +218,7 @@ export default function Pointer({
       <AnimatedG animatedProps={crosshairProps}>
         <AnimatedLine
           animatedProps={verticalLineProps}
-          y2={marginViewBox[0]}
+          y2={viewBox[1] + viewBox[3]}
           stroke="gray"
           strokeWidth={1}
           strokeDasharray={3}
