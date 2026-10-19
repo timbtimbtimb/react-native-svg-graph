@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, type ReactElement } from 'react';
 import { type ColorValue } from 'react-native';
-import { ClipPath, Defs, G, Rect, Text } from 'react-native-svg';
+import { ClipPath, Defs, G, Path, Rect, Text } from 'react-native-svg';
 import { useGraphContext, type Formatter } from '../contexts/GraphContext';
 
 // The gap left between two bars, in the plot's own units.
@@ -13,8 +13,9 @@ const GAP = 1;
  * `rightAxis` makes room for. They share the graph's x axis: a bar spans from
  * the previous point's x to its own, a value being what accumulated over the
  * interval ending at it, as an amount of precipitation is. The first bar is as
- * wide as the second. The pointer's tooltip gives the value of the bar under
- * it, after the graph's own.
+ * wide as the second. The axis is a line in the first series' colour, the
+ * plot's whole height, with the scale's two ends' values beside it. The
+ * pointer's tooltip gives the value of the bar under it, after the graph's own.
  */
 export default function Bars({
   values,
@@ -93,6 +94,12 @@ export default function Bars({
           )
         )}
       </G>
+      <Path
+        d={`M ${viewBox[0] + viewBox[2]} ${viewBox[1] + viewBox[3]} V ${viewBox[1]}`}
+        stroke={colors[0] ?? 'gray'}
+        strokeWidth={1}
+        fill="none"
+      />
       {ticks.map(({ value, y }) => (
         <Text
           key={value}
