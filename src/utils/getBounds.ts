@@ -1,8 +1,11 @@
 export type Bounds = ReturnType<typeof getBounds>;
 
+// `yDomain`, when given, is the vertical range itself rather than the data's:
+// what falls outside it is clipped by `Lines`.
 export default function getBounds(
   values: [number, number][],
-  zeroVisible: boolean
+  zeroVisible: boolean,
+  yDomain?: [number, number]
 ) {
   if (values.length === 0) {
     return {
@@ -17,8 +20,10 @@ export default function getBounds(
 
   const minValueX = Math.min(...values.map(([x]) => x as number));
   const maxValueX = Math.max(...values.map(([x]) => x as number));
-  const minValueY = Math.min(...values.map(([_, y]) => y as number));
-  const maxValueY = Math.max(...values.map(([_, y]) => y as number));
+  const minValueY =
+    yDomain?.[0] ?? Math.min(...values.map(([_, y]) => y as number));
+  const maxValueY =
+    yDomain?.[1] ?? Math.max(...values.map(([_, y]) => y as number));
 
   const zeroVisibleMinValueY = Math.min(minValueY, 0);
   const zeroVisibleMaxValueY = Math.max(maxValueY, 0);

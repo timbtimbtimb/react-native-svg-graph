@@ -42,6 +42,8 @@ export default function Pointer({
     formatter,
     marginViewBox,
     width,
+    clipped,
+    barsTooltip,
   } = useGraphContext();
 
   const { pointerX } = usePointerContext();
@@ -65,25 +67,55 @@ export default function Pointer({
       for (let s = 0; s < values.length; s++) {
         const p = transformer(values[s]?.[j] ?? [0, 0]);
         cxs[s]![j] = p[0];
-        cys[s]![j] = p[1];
+        // A value clipped out of the plot keeps its dot on the plot's edge; the
+        // tooltip still says what it is.
+        cys[s]![j] = clipped
+          ? Math.min(Math.max(p[1], viewBox[1]), viewBox[1] + viewBox[3])
+          : p[1];
       }
     }
 
     return { xs, mainX, mainY, cxs, cys };
-  }, [transformer, values]);
+  }, [clipped, transformer, values, viewBox]);
 
   // Tooltip strings. Kept off the UI thread (strings can't be animated props);
   // rendered from React state that only updates when the selected index changes.
   const textFrames = useMemo(() => {
     const list = values[0] ?? [];
-    return list.map((v, j) => ({
-      yAxisTexts: values
-        .map((k) => k[j]?.[1] ?? 0)
-        .sort((a, b) => b - a)
-        .map((val) => (formatter ? formatter(Math.round(val)) : String(val))),
-      dateText: xAxisTextFormatter?.(v?.[0] ?? 0),
-    }));
-  }, [formatter, values, xAxisTextFormatter]);
+    return list.map((v, j) => {
+      const x = v?.[0] ?? 0;
+      // The bar whose interval holds `x`: it ends at or after it, and the one
+      // before it ends before it. Bars' values are their own scale's, so they
+      // are not rounded the way the graph's are.
+      const barTexts = (barsTooltip?.values ?? []).flatMap((series) => {
+        const index = series.findIndex(([end]) => end >= x);
+        const bar = series[index];
+        const start =
+          series[index - 1]?.[0] ??
+          (bar == null
+            ? x
+            : bar[0] - ((series[index + 1]?.[0] ?? bar[0]) - bar[0]));
+        if (bar == null || x <= start) return [];
+        return [
+          barsTooltip?.formatter
+            ? barsTooltip.formatter(bar[1])
+            : String(bar[1]),
+        ];
+      });
+      return {
+        yAxisTexts: [
+          ...values
+            .map((k) => k[j]?.[1] ?? 0)
+            .sort((a, b) => b - a)
+            .map((val) =>
+              formatter ? formatter(Math.round(val)) : String(val)
+            ),
+          ...barTexts,
+        ],
+        dateText: xAxisTextFormatter?.(x),
+      };
+    });
+  }, [barsTooltip, formatter, values, xAxisTextFormatter]);
 
   const marginLeft = marginViewBox[0];
 
@@ -172,7 +204,9 @@ export default function Pointer({
   const tip = tipIdx >= 0 ? textFrames[tipIdx] : undefined;
   const tooltipWidth = fontSize * 5;
   const tooltipHeight =
-    fontSize * (values.length + (tip?.dateText == null ? 0.5 : 1.5));
+    fontSize *
+    ((tip?.yAxisTexts.length ?? values.length) +
+      (tip?.dateText == null ? 0.5 : 1.5));
   const tooltipX = width / 2 - tooltipWidth / 2;
   const tooltipY = viewBox[1];
 

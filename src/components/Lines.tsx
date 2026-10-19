@@ -8,10 +8,12 @@ import {
   Defs,
   LinearGradient,
   Stop,
+  ClipPath,
+  Rect,
 } from 'react-native-svg';
 
 export default function Lines({ colors }: { colors: Color[] }) {
-  const { masks, lines, gradients } = useGraphContext();
+  const { masks, lines, gradients, clipped, viewBox } = useGraphContext();
   const uniqueId = useId();
 
   const linesElements = useMemo(
@@ -34,7 +36,25 @@ export default function Lines({ colors }: { colors: Color[] }) {
     [colors, gradients, lines, masks, uniqueId]
   );
 
-  return linesElements;
+  if (!clipped) return linesElements;
+
+  // A fixed `yDomain` leaves values outside the plot: they are cut at its edges
+  // rather than drawn over the axes' margins.
+  return (
+    <G>
+      <Defs>
+        <ClipPath id={`clip-${uniqueId}`}>
+          <Rect
+            x={viewBox[0]}
+            y={viewBox[1]}
+            width={viewBox[2]}
+            height={viewBox[3]}
+          />
+        </ClipPath>
+      </Defs>
+      <G clipPath={`url(#clip-${uniqueId})`}>{linesElements}</G>
+    </G>
+  );
 }
 
 function Line({

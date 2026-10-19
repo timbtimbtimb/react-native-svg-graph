@@ -62,6 +62,16 @@ interface GraphContextType {
   formatter: Formatter;
   xLegend?: Legend;
   yLegend?: Legend;
+  /** Whether a `yDomain` fixes the vertical range, so `Lines` clips to the plot. */
+  clipped: boolean;
+  /** What `Bars` draws, which the pointer's tooltip reads too. */
+  barsTooltip: BarsTooltip | null;
+  setBarsTooltip: Dispatch<SetStateAction<BarsTooltip | null>>;
+}
+
+interface BarsTooltip {
+  values: [number, number][][];
+  formatter?: Formatter;
 }
 
 interface Props {
@@ -76,6 +86,8 @@ interface Props {
   decimation: DecimationMethod;
   xLegend?: Legend;
   yLegend?: Legend;
+  yDomain?: [number, number];
+  rightAxis?: boolean;
 }
 
 export const GraphContext = createContext<undefined | GraphContextType>(
@@ -103,8 +115,14 @@ export function GraphContextProvider({
   decimation,
   xLegend,
   yLegend,
+  yDomain,
+  rightAxis,
 }: Props): ReactElement {
   const [width, setWidth] = useState<number>(1);
+  const clipped = yDomain != null;
+  // What `Bars` draws, for the pointer's tooltip, which otherwise reads only
+  // `values`. Set by `Bars` itself, as it is a child the provider cannot see.
+  const [barsTooltip, setBarsTooltip] = useState<BarsTooltip | null>(null);
 
   // Screen-space simplification: drop sub-pixel points from the rendered paths
   // when a series has more points than horizontal pixels. `values` stays at full
@@ -115,9 +133,17 @@ export function GraphContextProvider({
     [decimation, values, width]
   );
 
+  // The domain is compared by its ends, so a fresh array literal each render
+  // does not recompute the bounds.
+  const yMin = yDomain?.[0];
+  const yMax = yDomain?.[1];
   const bounds = useMemo<Bounds>(() => {
-    return getBounds(values.flat(), zeroVisible);
-  }, [values, zeroVisible]);
+    return getBounds(
+      values.flat(),
+      zeroVisible,
+      yMin == null || yMax == null ? undefined : [yMin, yMax]
+    );
+  }, [values, zeroVisible, yMin, yMax]);
 
   const viewBox = useMemo(() => getViewBox(width, height), [width, height]);
 
@@ -127,14 +153,16 @@ export function GraphContextProvider({
     const legend = fontSize * LEGEND_MARGIN;
     const left = fontSize * 3 + (yLegend == null ? 0 : legend);
     const bottom = fontSize * 2.5 + (xLegend == null ? 0 : legend);
+    // Room for `Bars`' own axis, on the right.
+    const right = rightAxis === true ? fontSize * 3 : 0;
 
     return [
       viewBox[0] - left,
       viewBox[1] - fontSize,
-      viewBox[2] + left,
+      viewBox[2] + left + right,
       viewBox[3] + bottom,
     ];
-  }, [fontSize, viewBox, xLegend, yLegend]);
+  }, [fontSize, rightAxis, viewBox, xLegend, yLegend]);
 
   const transformer = useMemo(
     () => getTransformer(values.flat(), viewBox, bounds),
@@ -179,6 +207,9 @@ export function GraphContextProvider({
         values,
         xLegend,
         yLegend,
+        clipped,
+        barsTooltip,
+        setBarsTooltip,
       }}
     >
       {children}

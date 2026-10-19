@@ -25,6 +25,13 @@ interface Props {
   // under its tick labels, the y one reads bottom-to-top beside them.
   xLegend?: Legend;
   yLegend?: Legend;
+  /**
+   * The vertical range, `[min, max]`, instead of the data's own. Lines are
+   * clipped at its edges.
+   */
+  yDomain?: [number, number];
+  /** Room on the right for the axis `Bars` draws there. */
+  rightAxis?: boolean;
 }
 
 export default function Graph({
@@ -39,6 +46,8 @@ export default function Graph({
   decimation,
   xLegend,
   yLegend,
+  yDomain,
+  rightAxis,
   ...props
 }: Props & ViewProps): ReactElement {
   return (
@@ -53,6 +62,8 @@ export default function Graph({
       decimation={decimation ?? 'minmax'}
       xLegend={xLegend}
       yLegend={yLegend}
+      yDomain={yDomain}
+      rightAxis={rightAxis}
     >
       <PointerContextProvider>
         <Container {...props}>{children}</Container>
