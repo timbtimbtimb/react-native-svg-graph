@@ -22,11 +22,18 @@ export default function Bars({
   colors,
   ratio = 1 / 3,
   formatter,
+  tickFormatter,
 }: {
   values: [number, number][][];
   colors: ColorValue[];
   ratio?: number;
   formatter?: Formatter;
+  /**
+   * The axis's labels, when they say less than the tooltip — the bare number,
+   * the unit left to the legend, as `Grid`'s formatter is to the graph's.
+   * Defaults to `formatter`.
+   */
+  tickFormatter?: Formatter;
 }): ReactElement {
   const { transformer, viewBox, fontSize, setBarsTooltip } = useGraphContext();
   const uniqueId = useId();
@@ -113,7 +120,7 @@ export default function Bars({
           alignmentBaseline={'middle'}
           textAnchor={'start'}
         >
-          {formatter ? formatter(value) : String(value)}
+          {(tickFormatter ?? formatter)?.(value) ?? String(value)}
         </Text>
       ))}
     </G>
