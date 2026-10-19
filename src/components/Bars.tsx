@@ -6,6 +6,14 @@ import { useGraphContext, type Formatter } from '../contexts/GraphContext';
 // The gap left between two bars, in the plot's own units.
 const GAP = 1;
 
+// The axis's labels, in font sizes: the room left between the axis line and
+// them, a bold digit's width — about the widest of any character in a number,
+// and an estimate for any other, since SVG text cannot be measured as it is
+// laid out — and the room after them, before the legend or the edge.
+const LABEL_INSET = 0.3;
+const CHARACTER_WIDTH = 0.6;
+const LABEL_END = 0.3;
+
 /**
  * `values` as bars along the bottom of the plot, on a scale of their own: from
  * zero at the bottom edge to their largest value, rounded up, at `ratio` of the
@@ -35,7 +43,13 @@ export default function Bars({
    */
   tickFormatter?: Formatter;
 }): ReactElement {
-  const { transformer, viewBox, fontSize, setBarsTooltip } = useGraphContext();
+  const {
+    transformer,
+    viewBox,
+    fontSize,
+    setBarsTooltip,
+    setRightLabelsWidth,
+  } = useGraphContext();
   const uniqueId = useId();
 
   // Handed to the pointer, so its tooltip says what the bar under it holds.
@@ -69,9 +83,26 @@ export default function Bars({
           };
         })
       ),
-      ticks: [0, max].map((value) => ({ value, y: toY(value) })),
+      ticks: [0, max].map((value) => ({
+        value,
+        y: toY(value),
+        label: (tickFormatter ?? formatter)?.(value) ?? String(value),
+      })),
     };
-  }, [ratio, transformer, values, viewBox]);
+  }, [formatter, ratio, tickFormatter, transformer, values, viewBox]);
+
+  // The room the labels take, for the right margin: as wide as the longest.
+  const labelsWidth =
+    fontSize *
+    (LABEL_INSET +
+      CHARACTER_WIDTH * Math.max(...ticks.map(({ label }) => label.length)) +
+      LABEL_END);
+  useEffect(() => {
+    setRightLabelsWidth(labelsWidth);
+    return () => {
+      setRightLabelsWidth(null);
+    };
+  }, [labelsWidth, setRightLabelsWidth]);
 
   return (
     <G>
@@ -107,12 +138,12 @@ export default function Bars({
         strokeWidth={1}
         fill="none"
       />
-      {ticks.map(({ value, y }) => (
+      {ticks.map(({ value, y, label }) => (
         <Text
           key={value}
           x={viewBox[0] + viewBox[2]}
           y={y}
-          dx={fontSize * 0.3}
+          dx={fontSize * LABEL_INSET}
           fontWeight={'bold'}
           fontSize={fontSize}
           fontFamily="sans"
@@ -120,7 +151,7 @@ export default function Bars({
           alignmentBaseline={'middle'}
           textAnchor={'start'}
         >
-          {(tickFormatter ?? formatter)?.(value) ?? String(value)}
+          {label}
         </Text>
       ))}
     </G>

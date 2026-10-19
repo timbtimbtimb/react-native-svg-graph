@@ -68,6 +68,8 @@ interface GraphContextType {
   /** What `Bars` draws, which the pointer's tooltip reads too. */
   barsTooltip: BarsTooltip | null;
   setBarsTooltip: Dispatch<SetStateAction<BarsTooltip | null>>;
+  /** How wide `Bars`' labels are, in pixels, which the right margin is made. */
+  setRightLabelsWidth: Dispatch<SetStateAction<number | null>>;
 }
 
 interface BarsTooltip {
@@ -126,6 +128,9 @@ export function GraphContextProvider({
   // What `Bars` draws, for the pointer's tooltip, which otherwise reads only
   // `values`. Set by `Bars` itself, as it is a child the provider cannot see.
   const [barsTooltip, setBarsTooltip] = useState<BarsTooltip | null>(null);
+  // As wide as `Bars` says its labels are, which only it knows, or the left
+  // axis's own room until it has.
+  const [rightLabelsWidth, setRightLabelsWidth] = useState<number | null>(null);
 
   // The domain is compared by its ends, so a fresh array literal each render
   // does not recompute the bounds.
@@ -151,7 +156,7 @@ export function GraphContextProvider({
     const bottom = fontSize * 2.5 + (xLegend == null ? 0 : legend);
     // Room for `Bars`' own axis, on the right, and for its legend.
     const right =
-      (rightAxis === true ? fontSize * 3 : 0) +
+      (rightAxis === true ? (rightLabelsWidth ?? fontSize * 3) : 0) +
       (rightLegend == null ? 0 : legend);
     // At least a pixel each way, before the box has been measured.
     const plot = getViewBox(
@@ -163,7 +168,16 @@ export function GraphContextProvider({
       viewBox: plot,
       marginViewBox: [plot[0] - left, plot[1] - top, width, height] as ViewBox,
     };
-  }, [fontSize, height, rightAxis, rightLegend, width, xLegend, yLegend]);
+  }, [
+    fontSize,
+    height,
+    rightAxis,
+    rightLabelsWidth,
+    rightLegend,
+    width,
+    xLegend,
+    yLegend,
+  ]);
 
   // Screen-space simplification: drop sub-pixel points from the rendered paths
   // when a series has more points than the plot has pixels across. `values`
@@ -224,6 +238,7 @@ export function GraphContextProvider({
         clipped,
         barsTooltip,
         setBarsTooltip,
+        setRightLabelsWidth,
       }}
     >
       {children}
