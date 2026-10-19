@@ -20,7 +20,7 @@ export default function Container({
 }: {
   children: ReactNode;
 } & ViewProps) {
-  const { viewBox, marginViewBox, setWidth } = useGraphContext();
+  const { marginViewBox, setWidth } = useGraphContext();
   const { pointerX } = usePointerContext();
 
   const gesture = useMemo(() => {
@@ -89,8 +89,8 @@ export default function Container({
         <Svg
           preserveAspectRatio="none slice"
           viewBox={marginViewBox.join(' ')}
-          width={viewBox[2]}
-          height={viewBox[3]}
+          width={marginViewBox[2]}
+          height={marginViewBox[3]}
           style={styles.svg}
         >
           {children}

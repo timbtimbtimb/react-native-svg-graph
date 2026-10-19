@@ -13,6 +13,10 @@ interface Props {
   children: ReactElement[];
   formatter: Formatter;
   width: number;
+  /**
+   * The graph's height in pixels, its margins included: the plot is what the
+   * tick labels, the legends and `rightAxis` leave of it.
+   */
   height: number;
   values: [number, number][][];
   zeroVisible: boolean;

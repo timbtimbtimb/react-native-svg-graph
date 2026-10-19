@@ -85,27 +85,18 @@ export default function Legends(): ReactElement | null {
 
   if (xLegend == null && yLegend == null) return null;
 
-  // The SVG is drawn `preserveAspectRatio="none"`, so its margin view box is
-  // squeezed into the plot's own pixel box and one user unit is worth less than
-  // one pixel — by a different amount on each axis. Everything below is in
-  // pixels, so each measurement taken from the view box is scaled on the way.
-  const [, , svgWidth, svgHeight] = viewBox;
-  const [, , marginWidth, marginHeight] = marginViewBox;
-  const scaleX = svgWidth / marginWidth;
-  const scaleY = svgHeight / marginHeight;
-
+  // The view box is the graph's box, one unit a pixel, so what is measured in
+  // it places these views as it is.
   // The strip each legend was given, and the plot it runs alongside.
-  const stripX = fontSize * LEGEND_MARGIN * scaleY;
-  const stripY = fontSize * LEGEND_MARGIN * scaleX;
-  const plotLeft = (viewBox[0] - marginViewBox[0]) * scaleX;
-  const plotTop = (viewBox[1] - marginViewBox[1]) * scaleY;
-  const plotWidth = svgWidth * scaleX;
-  const plotHeight = svgHeight * scaleY;
+  const stripX = fontSize * LEGEND_MARGIN;
+  const stripY = fontSize * LEGEND_MARGIN;
+  const plotLeft = viewBox[0] - marginViewBox[0];
+  const plotTop = viewBox[1] - marginViewBox[1];
+  const plotWidth = viewBox[2];
+  const plotHeight = viewBox[3];
 
-  // Matched to the tick labels, which are SVG text and so are squeezed with
-  // everything else inside the view box. These views are not, so the scale has
-  // to be applied by hand or the legend comes out larger than the numbers.
-  const size = fontSize * scaleY;
+  // Matched to the tick labels.
+  const size = fontSize;
 
   return (
     <>
@@ -116,7 +107,7 @@ export default function Legends(): ReactElement | null {
             styles.strip,
             {
               left: plotLeft,
-              top: svgHeight - stripX - size * X_LEGEND_HUG,
+              top: marginViewBox[3] - stripX - size * X_LEGEND_HUG,
               width: plotWidth,
               height: stripX,
             },

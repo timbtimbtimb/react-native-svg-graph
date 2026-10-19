@@ -41,7 +41,6 @@ export default function Pointer({
     transformer,
     formatter,
     marginViewBox,
-    width,
     clipped,
     barsTooltip,
   } = useGraphContext();
@@ -117,10 +116,9 @@ export default function Pointer({
     });
   }, [barsTooltip, formatter, values, xAxisTextFormatter]);
 
-  // The SVG stretches its view box, margins included, over its whole width
-  // (`preserveAspectRatio="none"`), so a pixel maps to the view box's units
-  // linearly, from its left edge to its right — past the plot on both sides.
-  const [viewBoxLeft, , viewBoxWidth] = marginViewBox;
+  // The view box is the graph's box, so a pixel is a unit, counted from the
+  // box's left edge — the left margin's, past the plot.
+  const viewBoxLeft = marginViewBox[0];
 
   // Binary-search the closest data point on the UI thread, every frame.
   const selected = useDerivedValue<Selected>(() => {
@@ -132,7 +130,7 @@ export default function Pointer({
       return { active: false, idx: -1, mainX: 0, mainY: 0 };
     }
 
-    const adjusted = viewBoxLeft + (px / width) * viewBoxWidth;
+    const adjusted = viewBoxLeft + px;
 
     let low = 0;
     let high = n - 1;
@@ -210,7 +208,9 @@ export default function Pointer({
     fontSize *
     ((tip?.yAxisTexts.length ?? values.length) +
       (tip?.dateText == null ? 0.5 : 1.5));
-  const tooltipX = width / 2 - tooltipWidth / 2;
+  // Over the middle of the plot.
+  const tooltipCenter = viewBox[0] + viewBox[2] / 2;
+  const tooltipX = tooltipCenter - tooltipWidth / 2;
   const tooltipY = viewBox[1];
 
   return (
@@ -256,7 +256,7 @@ export default function Pointer({
           {tip.yAxisTexts.map((text, i) => (
             <Text
               key={i}
-              x={width / 2}
+              x={tooltipCenter}
               y={
                 tooltipY + fontSize * (i + (tip.dateText == null ? 0.25 : 1.25))
               }
@@ -272,7 +272,7 @@ export default function Pointer({
           ))}
           {tip.dateText != null && (
             <Text
-              x={width / 2}
+              x={tooltipCenter}
               y={tooltipY + fontSize * 0.25}
               textAnchor="middle"
               alignmentBaseline="hanging"
