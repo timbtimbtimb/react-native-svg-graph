@@ -1,6 +1,7 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type Dispatch,
@@ -31,6 +32,14 @@ export interface Legend {
   label: string;
   unit?: string;
   color?: ColorValue;
+}
+
+/** Where the plot is in the graph's box, in pixels from its top left corner. */
+export interface PlotLayout {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 // How much room a legend needs, as a multiple of the font size, on top of the
@@ -92,6 +101,7 @@ interface Props {
   rightLegend?: Legend;
   yDomain?: [number, number];
   rightAxis?: boolean;
+  onPlotLayout?: (plot: PlotLayout) => void;
 }
 
 export const GraphContext = createContext<undefined | GraphContextType>(
@@ -122,6 +132,7 @@ export function GraphContextProvider({
   rightLegend,
   yDomain,
   rightAxis,
+  onPlotLayout,
 }: Props): ReactElement {
   const [width, setWidth] = useState<number>(1);
   const clipped = yDomain != null;
@@ -178,6 +189,23 @@ export function GraphContextProvider({
     xLegend,
     yLegend,
   ]);
+
+  // Reported whenever the plot moves or is resized, so what is laid over the
+  // graph can be placed on it without knowing how its margins are made. A unit
+  // is a pixel, so the plot's place in the margin view box is its place in the
+  // box.
+  const plotX = viewBox[0] - marginViewBox[0];
+  const plotY = viewBox[1] - marginViewBox[1];
+  const plotWidth = viewBox[2];
+  const plotHeight = viewBox[3];
+  useEffect(() => {
+    onPlotLayout?.({
+      x: plotX,
+      y: plotY,
+      width: plotWidth,
+      height: plotHeight,
+    });
+  }, [onPlotLayout, plotHeight, plotWidth, plotX, plotY]);
 
   // Screen-space simplification: drop sub-pixel points from the rendered paths
   // when a series has more points than the plot has pixels across. `values`

@@ -9,4 +9,4 @@ import decimate, { type DecimationMethod } from './utils/decimate';
 
 export { Graph, XAxis, YAxis, Grid, Lines, Bars, Pointer, decimate };
 export type { DecimationMethod };
-export type { Legend } from './contexts/GraphContext';
+export type { Legend, PlotLayout } from './contexts/GraphContext';

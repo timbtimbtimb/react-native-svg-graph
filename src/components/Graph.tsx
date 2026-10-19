@@ -4,6 +4,7 @@ import {
   GraphContextProvider,
   type Formatter,
   type Legend,
+  type PlotLayout,
 } from '../contexts/GraphContext';
 import { PointerContextProvider } from '../contexts/PointerContext';
 import type { DecimationMethod } from '../utils/decimate';
@@ -41,6 +42,11 @@ interface Props {
   yDomain?: [number, number];
   /** Room on the right for the axis `Bars` draws there. */
   rightAxis?: boolean;
+  /**
+   * Called with where the plot is in the graph's box, in pixels, whenever it
+   * moves or is resized — to lay something over it.
+   */
+  onPlotLayout?: (plot: PlotLayout) => void;
 }
 
 export default function Graph({
@@ -58,6 +64,7 @@ export default function Graph({
   rightLegend,
   yDomain,
   rightAxis,
+  onPlotLayout,
   ...props
 }: Props & ViewProps): ReactElement {
   return (
@@ -75,6 +82,7 @@ export default function Graph({
       rightLegend={rightAxis === true ? rightLegend : undefined}
       yDomain={yDomain}
       rightAxis={rightAxis}
+      onPlotLayout={onPlotLayout}
     >
       <PointerContextProvider>
         <Container {...props}>{children}</Container>
