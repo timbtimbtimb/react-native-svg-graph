@@ -22,7 +22,10 @@ export default function Lines({ colors }: { colors: Color[] }) {
         return (
           <Line
             key={i + uniqueId}
-            uniqueId={uniqueId}
+            // One per line: SVG ids are document-wide, and two lines sharing one
+            // had every area filled with whichever gradient the renderer kept —
+            // the last on native, the first in a browser.
+            uniqueId={`${uniqueId}-${i}`}
             positiveColor={colors[i]?.positiveColor}
             negativeColor={colors[i]?.negativeColor}
             positiveMask={masks.positiveMask}
