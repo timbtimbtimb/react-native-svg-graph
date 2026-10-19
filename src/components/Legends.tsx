@@ -80,10 +80,10 @@ function LegendRow({
  * of it that happens to lie to the right.
  */
 export default function Legends(): ReactElement | null {
-  const { viewBox, marginViewBox, fontSize, xLegend, yLegend } =
+  const { viewBox, marginViewBox, fontSize, xLegend, yLegend, rightLegend } =
     useGraphContext();
 
-  if (xLegend == null && yLegend == null) return null;
+  if (xLegend == null && yLegend == null && rightLegend == null) return null;
 
   // The view box is the graph's box, one unit a pixel, so what is measured in
   // it places these views as it is.
@@ -136,6 +136,24 @@ export default function Legends(): ReactElement | null {
           />
         </View>
       )}
+      {rightLegend == null ? null : (
+        <View
+          pointerEvents="none"
+          style={[
+            styles.strip,
+            styles.rightStrip,
+            { top: plotTop, width: stripY, height: plotHeight },
+          ]}
+        >
+          {/* Turned the other way from the y legend, to read top-to-bottom,
+              its letters' feet towards the plot as theirs are. */}
+          <LegendRow
+            legend={rightLegend}
+            fontSize={size}
+            style={{ width: plotHeight, transform: [{ rotate: '90deg' }] }}
+          />
+        </View>
+      )}
     </>
   );
 }
@@ -149,6 +167,10 @@ const styles = StyleSheet.create({
   // Down the outer edge of the left margin, beyond the tick labels.
   yStrip: {
     left: 0,
+  },
+  // Down the outer edge of the right margin, beyond the bars' tick labels.
+  rightStrip: {
+    right: 0,
   },
   row: {
     flexDirection: 'row',

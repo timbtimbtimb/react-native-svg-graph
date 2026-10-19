@@ -62,6 +62,7 @@ interface GraphContextType {
   formatter: Formatter;
   xLegend?: Legend;
   yLegend?: Legend;
+  rightLegend?: Legend;
   /** Whether a `yDomain` fixes the vertical range, so `Lines` clips to the plot. */
   clipped: boolean;
   /** What `Bars` draws, which the pointer's tooltip reads too. */
@@ -86,6 +87,7 @@ interface Props {
   decimation: DecimationMethod;
   xLegend?: Legend;
   yLegend?: Legend;
+  rightLegend?: Legend;
   yDomain?: [number, number];
   rightAxis?: boolean;
 }
@@ -115,6 +117,7 @@ export function GraphContextProvider({
   decimation,
   xLegend,
   yLegend,
+  rightLegend,
   yDomain,
   rightAxis,
 }: Props): ReactElement {
@@ -146,8 +149,10 @@ export function GraphContextProvider({
     const left = fontSize * 3 + (yLegend == null ? 0 : legend);
     const top = fontSize;
     const bottom = fontSize * 2.5 + (xLegend == null ? 0 : legend);
-    // Room for `Bars`' own axis, on the right.
-    const right = rightAxis === true ? fontSize * 3 : 0;
+    // Room for `Bars`' own axis, on the right, and for its legend.
+    const right =
+      (rightAxis === true ? fontSize * 3 : 0) +
+      (rightLegend == null ? 0 : legend);
     // At least a pixel each way, before the box has been measured.
     const plot = getViewBox(
       Math.max(1, width - left - right),
@@ -158,7 +163,7 @@ export function GraphContextProvider({
       viewBox: plot,
       marginViewBox: [plot[0] - left, plot[1] - top, width, height] as ViewBox,
     };
-  }, [fontSize, height, rightAxis, width, xLegend, yLegend]);
+  }, [fontSize, height, rightAxis, rightLegend, width, xLegend, yLegend]);
 
   // Screen-space simplification: drop sub-pixel points from the rendered paths
   // when a series has more points than the plot has pixels across. `values`
@@ -215,6 +220,7 @@ export function GraphContextProvider({
         values,
         xLegend,
         yLegend,
+        rightLegend,
         clipped,
         barsTooltip,
         setBarsTooltip,

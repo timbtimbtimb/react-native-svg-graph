@@ -30,6 +30,11 @@ interface Props {
   xLegend?: Legend;
   yLegend?: Legend;
   /**
+   * What the axis `Bars` draws on the right plots, named as `yLegend` is, down
+   * the outer edge of the right margin. Only drawn with `rightAxis`.
+   */
+  rightLegend?: Legend;
+  /**
    * The vertical range, `[min, max]`, instead of the data's own. Lines are
    * clipped at its edges.
    */
@@ -50,6 +55,7 @@ export default function Graph({
   decimation,
   xLegend,
   yLegend,
+  rightLegend,
   yDomain,
   rightAxis,
   ...props
@@ -66,6 +72,7 @@ export default function Graph({
       decimation={decimation ?? 'minmax'}
       xLegend={xLegend}
       yLegend={yLegend}
+      rightLegend={rightAxis === true ? rightLegend : undefined}
       yDomain={yDomain}
       rightAxis={rightAxis}
     >
