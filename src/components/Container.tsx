@@ -20,7 +20,7 @@ export default function Container({
 }: {
   children: ReactNode;
 } & ViewProps) {
-  const { marginViewBox, setWidth } = useGraphContext();
+  const { marginViewBox, height, setWidth } = useGraphContext();
   const { pointerX } = usePointerContext();
 
   const gesture = useMemo(() => {
@@ -72,8 +72,13 @@ export default function Container({
   return (
     <View
       {...props}
+      // The box is held at the graph's height, which takes in its margins,
+      // rather than left to the SVG, which the web sizes from its view box: the
+      // first frame, drawn before the box has measured its width, would
+      // otherwise push whatever is laid out below it.
       style={{
         ...styles.container,
+        height,
         ...(props.style ?? {}),
       }}
       onLayout={(event) => {

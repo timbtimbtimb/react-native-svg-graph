@@ -13,6 +13,10 @@ import type { ReactElement } from 'react';
 interface Props {
   children: ReactElement[];
   formatter: Formatter;
+  /**
+   * The width the graph is expected to have, in pixels, which it is drawn at
+   * until it has measured its box; it then follows the box.
+   */
   width: number;
   /**
    * The graph's height in pixels, its margins included: the plot is what the

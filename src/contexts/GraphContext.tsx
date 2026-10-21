@@ -119,6 +119,7 @@ export function useGraphContext(): GraphContextType {
 }
 
 export function GraphContextProvider({
+  width: initialWidth,
   height,
   fontSize,
   children,
@@ -134,7 +135,10 @@ export function GraphContextProvider({
   rightAxis,
   onPlotLayout,
 }: Props): ReactElement {
-  const [width, setWidth] = useState<number>(1);
+  // The width the caller says the graph will have, until the box has measured
+  // itself: starting from a pixel, the first frame's view box was a pixel wide,
+  // and the web sizes an SVG from its view box's proportions.
+  const [width, setWidth] = useState<number>(initialWidth);
   const clipped = yDomain != null;
   // What `Bars` draws, for the pointer's tooltip, which otherwise reads only
   // `values`. Set by `Bars` itself, as it is a child the provider cannot see.
